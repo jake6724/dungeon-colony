@@ -1,0 +1,69 @@
+[gd_scene load_steps=17 format=3 uid="uid://cietwbxcbfm0q"]
+
+[ext_resource type="Script" path="res://Scripts/Main.gd" id="1_t1omg"]
+[ext_resource type="Script" path="res://Scripts/Grid.gd" id="2_5226h"]
+[ext_resource type="Texture2D" uid="uid://haalkkxbi1ns" path="res://art/dirt.png" id="2_db28w"]
+[ext_resource type="Texture2D" uid="uid://c5mky0ai6xeri" path="res://art/grass.png" id="3_2neji"]
+[ext_resource type="PackedScene" uid="uid://c0iosa5yrvqdb" path="res://scenes/Unit.tscn" id="3_73hmm"]
+[ext_resource type="Script" path="res://Scenes/PlayerCamera.gd" id="3_66107"]
+[ext_resource type="Texture2D" uid="uid://dh27gs0fkkn75" path="res://art/missing.png" id="4_81rct"]
+[ext_resource type="Script" path="res://scripts/PathFinder.gd" id="4_g680v"]
+[ext_resource type="Texture2D" uid="uid://dtjd322hralfv" path="res://art/stonewall.png" id="5_qhqgh"]
+[ext_resource type="Texture2D" uid="uid://bjl82j8pxempk" path="res://art/woodwall.png" id="6_fcteo"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_y6n0x"]
+texture = ExtResource("2_db28w")
+texture_region_size = Vector2i(128, 128)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_pcg4c"]
+texture = ExtResource("3_2neji")
+texture_region_size = Vector2i(128, 128)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_o83be"]
+texture = ExtResource("4_81rct")
+texture_region_size = Vector2i(128, 128)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_x6vff"]
+texture = ExtResource("5_qhqgh")
+texture_region_size = Vector2i(128, 128)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0him7"]
+texture = ExtResource("6_fcteo")
+texture_region_size = Vector2i(128, 128)
+0:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_f1hvv"]
+tile_size = Vector2i(128, 128)
+sources/0 = SubResource("TileSetAtlasSource_y6n0x")
+sources/1 = SubResource("TileSetAtlasSource_pcg4c")
+sources/2 = SubResource("TileSetAtlasSource_o83be")
+sources/3 = SubResource("TileSetAtlasSource_x6vff")
+sources/4 = SubResource("TileSetAtlasSource_0him7")
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_t1omg")
+
+[node name="Grid" type="TileMap" parent="."]
+tile_set = SubResource("TileSet_f1hvv")
+format = 2
+layer_0/name = "floor"
+layer_1/name = "building"
+layer_1/z_index = 1
+layer_1/tile_data = PackedInt32Array()
+script = ExtResource("2_5226h")
+
+[node name="Debug" type="Node2D" parent="Grid"]
+
+[node name="Units" type="Node2D" parent="Grid"]
+
+[node name="Pathfinding" type="Node" parent="Grid"]
+script = ExtResource("4_g680v")
+
+[node name="Unit" parent="Grid" instance=ExtResource("3_73hmm")]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+script = ExtResource("3_66107")

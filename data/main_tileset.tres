@@ -1,0 +1,40 @@
+[gd_resource type="TileSet" load_steps=11 format=3 uid="uid://c2x727eekxfqf"]
+
+[ext_resource type="Texture2D" uid="uid://haalkkxbi1ns" path="res://art/dirt.png" id="1_iu7js"]
+[ext_resource type="Texture2D" uid="uid://c5mky0ai6xeri" path="res://art/grass.png" id="2_sp3s1"]
+[ext_resource type="Texture2D" uid="uid://bicwskmpyu0yq" path="res://art/mountain.png" id="3_i86cb"]
+[ext_resource type="Texture2D" uid="uid://2irs61686wgh" path="res://art/no_floor.png" id="4_fctl1"]
+[ext_resource type="Texture2D" uid="uid://bj4uo8ifo8347" path="res://art/water.png" id="5_yj5tt"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_bhmap"]
+texture = ExtResource("1_iu7js")
+texture_region_size = Vector2i(64, 64)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_fcyjg"]
+texture = ExtResource("2_sp3s1")
+texture_region_size = Vector2i(64, 64)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_7yfy3"]
+texture = ExtResource("3_i86cb")
+texture_region_size = Vector2i(64, 64)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_u8qgb"]
+texture = ExtResource("4_fctl1")
+texture_region_size = Vector2i(64, 64)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ug03j"]
+texture = ExtResource("5_yj5tt")
+texture_region_size = Vector2i(64, 64)
+0:0/0 = 0
+
+[resource]
+tile_size = Vector2i(64, 64)
+sources/0 = SubResource("TileSetAtlasSource_bhmap")
+sources/1 = SubResource("TileSetAtlasSource_fcyjg")
+sources/2 = SubResource("TileSetAtlasSource_7yfy3")
+sources/3 = SubResource("TileSetAtlasSource_u8qgb")
+sources/4 = SubResource("TileSetAtlasSource_ug03j")

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="FloorData" load_steps=2 format=3 uid="uid://d3gm8k3wrjrno"]
+
+[ext_resource type="Script" path="res://scripts/FloorData.gd" id="1_ub24j"]
+
+[resource]
+script = ExtResource("1_ub24j")
+name = "dirt"
+id = 0
+layer = 0
+coords = Vector2(0, 0)

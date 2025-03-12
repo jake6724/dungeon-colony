@@ -1,0 +1,42 @@
+[gd_scene load_steps=8 format=3 uid="uid://cietwbxcbfm0q"]
+
+[ext_resource type="Script" path="res://Scripts/Main.gd" id="1_t1omg"]
+[ext_resource type="Script" path="res://Scripts/Grid.gd" id="2_5226h"]
+[ext_resource type="TileSet" uid="uid://c2x727eekxfqf" path="res://data/main_tileset.tres" id="2_q6gee"]
+[ext_resource type="PackedScene" uid="uid://c0iosa5yrvqdb" path="res://scenes/Unit.tscn" id="3_73hmm"]
+[ext_resource type="Script" path="res://scripts/PathFinder.gd" id="4_g680v"]
+[ext_resource type="Script" path="res://scripts/PlayerCamera.gd" id="6_l54ba"]
+[ext_resource type="PackedScene" uid="uid://bsotntp6g7qdj" path="res://scenes/BuildUI.tscn" id="11_wused"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_t1omg")
+
+[node name="Grid" type="TileMap" parent="."]
+tile_set = ExtResource("2_q6gee")
+format = 2
+layer_0/name = "floor"
+layer_1/name = "building"
+layer_1/z_index = 1
+layer_1/tile_data = PackedInt32Array()
+script = ExtResource("2_5226h")
+
+[node name="Debug" type="Node2D" parent="Grid"]
+
+[node name="Units" type="Node2D" parent="Grid"]
+
+[node name="Pathfinding" type="Node" parent="Grid"]
+script = ExtResource("4_g680v")
+
+[node name="Unit" parent="Grid" instance=ExtResource("3_73hmm")]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+script = ExtResource("6_l54ba")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+visible = false
+
+[node name="Control" parent="CanvasLayer" instance=ExtResource("11_wused")]
+offset_left = -2.0
+offset_top = 4.0
+offset_right = -2.0
+offset_bottom = 4.0

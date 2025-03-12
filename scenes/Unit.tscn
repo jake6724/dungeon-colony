@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://c0iosa5yrvqdb"]
+
+[ext_resource type="Script" path="res://scripts/Unit.gd" id="1_icqpx"]
+[ext_resource type="Texture2D" uid="uid://of0wd5cgcmh2" path="res://art/colonist.png" id="2_katyl"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rtl34"]
+size = Vector2(64, 64)
+
+[node name="Unit" type="Area2D"]
+script = ExtResource("1_icqpx")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_katyl")
+centered = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(32, 32)
+shape = SubResource("RectangleShape2D_rtl34")
