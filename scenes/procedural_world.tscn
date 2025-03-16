@@ -1,0 +1,23 @@
+[gd_scene load_steps=6 format=3 uid="uid://dnml7u2vru66j"]
+
+[ext_resource type="Script" uid="uid://vqqt88r5hqqr" path="res://scripts/ProceduralWorld.gd" id="1_rd4jm"]
+[ext_resource type="TileSet" uid="uid://c2x727eekxfqf" path="res://data/main_tileset.tres" id="2_dr83b"]
+[ext_resource type="Script" uid="uid://chjp2s4r77bvv" path="res://scripts/PlayerCamera.gd" id="3_47pg6"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_bdl40"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_850h6"]
+noise = SubResource("FastNoiseLite_bdl40")
+
+[node name="ProceduralWorld" type="Node2D"]
+script = ExtResource("1_rd4jm")
+noise_height_texture = SubResource("NoiseTexture2D_850h6")
+
+[node name="TileMap" type="TileMap" parent="."]
+tile_set = ExtResource("2_dr83b")
+format = 2
+
+[node name="Camera2D" type="Camera2D" parent="."]
+rotation = 0.00137676
+zoom = Vector2(0.11, 0.11)
+script = ExtResource("3_47pg6")

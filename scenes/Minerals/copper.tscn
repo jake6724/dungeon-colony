@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://ct7oq0dg5b1yn"]
+
+[ext_resource type="Script" uid="uid://c5hcenyseddhs" path="res://scripts/MineralData/Copper.gd" id="1_xpmwn"]
+[ext_resource type="Texture2D" uid="uid://ca0fh7nlhse6h" path="res://art/minerals/copper.png" id="2_o8csm"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6dci6"]
+size = Vector2(64, 64)
+
+[node name="Copper" type="Area2D"]
+script = ExtResource("1_xpmwn")
+metadata/_custom_type_script = "uid://c5hcenyseddhs"
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+texture = ExtResource("2_o8csm")
+centered = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(32, 32)
+shape = SubResource("RectangleShape2D_6dci6")

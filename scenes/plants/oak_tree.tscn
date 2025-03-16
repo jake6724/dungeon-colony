@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://02fejdem6d0y"]
+
+[ext_resource type="Script" path="res://scripts/PlantData/OakTree.gd" id="1_7e8fl"]
+[ext_resource type="Texture2D" uid="uid://dpdnghncb3lp1" path="res://art/plants/tree.png" id="2_f2lq6"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xx5h5"]
+size = Vector2(64, 128)
+
+[node name="OakTree" type="Area2D"]
+script = ExtResource("1_7e8fl")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+texture = ExtResource("2_f2lq6")
+centered = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(32, 64)
+shape = SubResource("RectangleShape2D_xx5h5")

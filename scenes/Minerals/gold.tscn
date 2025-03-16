@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://cuefekbk1oyu6"]
+
+[ext_resource type="Script" uid="uid://btfsu6uuds851" path="res://scripts/MineralData/Gold.gd" id="1_gatc0"]
+[ext_resource type="Texture2D" uid="uid://cq6tu6ctnqxkn" path="res://art/minerals/gold.png" id="2_ue6rn"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_00ctq"]
+size = Vector2(64, 64)
+
+[node name="Gold" type="Area2D"]
+script = ExtResource("1_gatc0")
+metadata/_custom_type_script = "uid://btfsu6uuds851"
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+texture = ExtResource("2_ue6rn")
+centered = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(32, 32)
+shape = SubResource("RectangleShape2D_00ctq")

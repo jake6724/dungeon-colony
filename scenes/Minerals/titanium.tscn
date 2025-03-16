@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://cmcquk0uhwwyj"]
+
+[ext_resource type="Script" uid="uid://bornj3edwin5b" path="res://scripts/MineralData/Titanium.gd" id="1_atur2"]
+[ext_resource type="Texture2D" uid="uid://bentvx1tty71y" path="res://art/minerals/titanium.png" id="2_sf6n3"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fxjpm"]
+size = Vector2(64, 64)
+
+[node name="Titanium" type="Area2D"]
+script = ExtResource("1_atur2")
+metadata/_custom_type_script = "uid://bornj3edwin5b"
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+texture = ExtResource("2_sf6n3")
+centered = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(32, 32)
+shape = SubResource("RectangleShape2D_fxjpm")

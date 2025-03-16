@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="MineralData" load_steps=2 format=3 uid="uid://cehnh3ieqbm7"]
+
+[ext_resource type="Script" uid="uid://dptsoopengatk" path="res://scripts/MineralData.gd" id="1_eviy3"]
+
+[resource]
+script = ExtResource("1_eviy3")
+name = "titanium"
+terrain_id = 3
+vein_growth = 10.0
+vein_growth_reduction = 2.5
+metadata/_custom_type_script = "uid://dptsoopengatk"

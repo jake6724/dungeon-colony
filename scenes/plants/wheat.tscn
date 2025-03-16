@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://ciro1cg05r4px"]
+
+[ext_resource type="Script" path="res://scripts/PlantData/Wheat.gd" id="1_hodiq"]
+[ext_resource type="Texture2D" uid="uid://xtc2whuje8ev" path="res://art/plants/wheat.png" id="2_ucxq8"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_uks6l"]
+size = Vector2(64, 64)
+
+[node name="wheat" type="Area2D"]
+script = ExtResource("1_hodiq")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+texture = ExtResource("2_ucxq8")
+centered = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(32, 32)
+shape = SubResource("RectangleShape2D_uks6l")

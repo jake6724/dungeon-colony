@@ -1,0 +1,69 @@
+[gd_scene load_steps=2 format=3 uid="uid://bwcx32mrvola1"]
+
+[ext_resource type="Script" uid="uid://bcc6fe6pvdovj" path="res://scenes/LoadingScreen.gd" id="1_ep5rh"]
+
+[node name="LoadingScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ep5rh")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 0
+offset_right = 2304.0
+offset_bottom = 1296.0
+color = Color(0.471924, 0.487718, 0.494461, 1)
+
+[node name="ProgressBarVBox" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 1101.0
+offset_top = 471.0
+offset_right = 1425.0
+offset_bottom = 767.0
+theme_override_constants/separation = 15
+
+[node name="SampleNoiseProgressBar" type="ProgressBar" parent="ProgressBarVBox"]
+layout_mode = 2
+
+[node name="CreateCellProgressBar" type="ProgressBar" parent="ProgressBarVBox"]
+layout_mode = 2
+
+[node name="ProcessMineralsProgressBar" type="ProgressBar" parent="ProgressBarVBox"]
+layout_mode = 2
+
+[node name="PathFindingAddPointsProgressBar" type="ProgressBar" parent="ProgressBarVBox"]
+layout_mode = 2
+
+[node name="PathFindingConnectPointsProgressBar" type="ProgressBar" parent="ProgressBarVBox"]
+layout_mode = 2
+
+[node name="LabelVBox" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 882.0
+offset_top = 474.0
+offset_right = 1131.0
+offset_bottom = 770.0
+theme_override_constants/separation = 19
+
+[node name="SampleNoiseTexture" type="Label" parent="LabelVBox"]
+layout_mode = 2
+text = "Sample Noise"
+
+[node name="CreateCellData" type="Label" parent="LabelVBox"]
+layout_mode = 2
+text = "Create Cells"
+
+[node name="ProcessMinerals" type="Label" parent="LabelVBox"]
+layout_mode = 2
+text = "Process Minerals"
+
+[node name="Label4" type="Label" parent="LabelVBox"]
+layout_mode = 2
+text = "Pathfinding Add Points"
+
+[node name="Label5" type="Label" parent="LabelVBox"]
+layout_mode = 2
+text = "PathFinding Connect Points"

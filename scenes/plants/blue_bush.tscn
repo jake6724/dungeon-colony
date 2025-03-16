@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://cl5ovvvo0ce1k"]
+
+[ext_resource type="Script" uid="uid://bhio5knvdg1gw" path="res://scripts/PlantData/BlueBush.gd" id="1_nvsut"]
+[ext_resource type="Texture2D" uid="uid://g1cu3ekpy871" path="res://art/plants/blue_bush.png" id="2_30otq"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_uks6l"]
+size = Vector2(64, 64)
+
+[node name="BlueBush" type="Area2D"]
+script = ExtResource("1_nvsut")
+metadata/_custom_type_script = "uid://bhio5knvdg1gw"
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+texture = ExtResource("2_30otq")
+centered = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(32, 32)
+shape = SubResource("RectangleShape2D_uks6l")

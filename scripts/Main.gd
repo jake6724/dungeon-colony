@@ -1,19 +1,25 @@
 extends Node2D
 
-@onready var grid = $Grid
-@onready var pf = $Grid/Pathfinding
+@onready var lm: Overworld = $Overworld
+@onready var pf: PathFinder = $Overworld/PathFinding
+@onready var camera: Camera2D = $Camera2D
+var game_started: bool = false
 
 func _ready():
-	# grid.generateGrid()
+	center_camera()
+	lm.initialize_overworld()
 	pf.initialize()
 
-func _input(event):
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
-		if event.pressed:
-			var clicked = grid.worldToGrid(get_global_mouse_position())
-			grid.grid[clicked].navigable = false
-			grid.grid[clicked].floor_data = preload("res://data/floor/grass.tres")
-			grid.refreshTile(clicked)
+func center_camera() -> void:
+	camera.position = get_viewport().size / 2
+
+# func _input(event):
+# 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
+# 		if event.pressed:
+# 			var clicked = lm.worldToGrid(get_global_mouse_position())
+# 			lm.grid[clicked].navigable = false
+# 			lm.grid[clicked].floor_data = preload("res://data/floor/grass.tres")
+# 			lm.refreshCellFloor(clicked)
 
 
 # 			var rect = ReferenceRect.new()

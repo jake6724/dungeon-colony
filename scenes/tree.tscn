@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://dh4cqka53wb0s"]
+
+[ext_resource type="Texture2D" uid="uid://dpdnghncb3lp1" path="res://art/plants/tree.png" id="1_avsvi"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_avsvi"]
+radius = 30.0
+height = 130.0
+
+[node name="Area2D" type="Area2D"]
+z_index = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(0, -64)
+texture = ExtResource("1_avsvi")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -64)
+shape = SubResource("CapsuleShape2D_avsvi")

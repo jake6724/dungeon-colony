@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://blsk51487cs12"]
+
+[ext_resource type="Script" uid="uid://dxklbghvr8ud7" path="res://scripts/MineralData/Iron.gd" id="1_kcsae"]
+[ext_resource type="Texture2D" uid="uid://c01hawhqgerws" path="res://art/minerals/iron.png" id="2_0jca8"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_kcsae"]
+size = Vector2(64, 64)
+
+[node name="Iron" type="Area2D"]
+script = ExtResource("1_kcsae")
+metadata/_custom_type_script = "uid://dxklbghvr8ud7"
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+texture = ExtResource("2_0jca8")
+centered = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(32, 32)
+shape = SubResource("RectangleShape2D_kcsae")
