@@ -1,13 +1,13 @@
 extends Node2D
 
-@onready var lm: Overworld = $Overworld
+@onready var ow: Overworld = $Overworld
 @onready var pf: PathFinder = $Overworld/PathFinding
 @onready var camera: Camera2D = $Camera2D
 var game_started: bool = false
 
 func _ready():
 	center_camera()
-	lm.initialize_overworld()
+	ow.initialize_overworld()
 	pf.initialize()
 
 func center_camera() -> void:

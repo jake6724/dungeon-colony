@@ -2,8 +2,8 @@ class_name LoadingScreen
 extends Control
 
 @onready var main = get_tree().root.get_node("Main")
-@onready var lm: LayerManager = main.get_node("LayerManager")
-@onready var pf: PathFinder = lm.get_node("PathFinding")
+@onready var ow : Overworld = main.get_node("Overworld")
+@onready var pf: PathFinder = ow.get_node("PathFinding")
 @onready var color_rect = $ColorRect
 @onready var progress_container = $ProgressBarVBox
 @onready var label_container = $LabelVBox

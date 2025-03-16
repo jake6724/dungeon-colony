@@ -2,8 +2,7 @@ class_name Unit
 extends Area2D
 
 @onready var main = get_tree().root.get_node("Main")
-@onready var ow = main.get_node("Overworld")
-# @onready var terrain_layer: TerrainLayer = ow.get_node("TerrainLayer")
+@onready var ow: Overworld = main.get_node("Overworld")
 @onready var pf: PathFinder = ow.get_node("PathFinding")
 
 var data: UnitData = UnitData.new()

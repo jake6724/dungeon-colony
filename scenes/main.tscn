@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://cvohvjt5mlu4n" path="res://scripts/Main.gd" id="1_t1omg"]
 [ext_resource type="TileSet" uid="uid://c2x727eekxfqf" path="res://data/main_tileset.tres" id="2_q6gee"]
 [ext_resource type="PackedScene" uid="uid://c0iosa5yrvqdb" path="res://scenes/Unit.tscn" id="3_73hmm"]
-[ext_resource type="Script" uid="uid://r5sju5a6ynj2" path="res://scripts/LayerManager.gd" id="4_85g3d"]
+[ext_resource type="Script" uid="uid://dhuraalayttrr" path="res://scripts/Overworld.gd" id="3_trceg"]
 [ext_resource type="Script" uid="uid://d0gx3aky4farb" path="res://scripts/PathFinder.gd" id="4_g680v"]
 [ext_resource type="Script" uid="uid://chjp2s4r77bvv" path="res://scripts/PlayerCamera.gd" id="6_l54ba"]
 [ext_resource type="Script" uid="uid://bnw6bfarxe5fx" path="res://scripts/TerrainLayer.gd" id="7_o6xl0"]
@@ -14,11 +14,11 @@
 [ext_resource type="Texture2D" uid="uid://fyueul7juaj5" path="res://art/minerals/mountain/copper_3x3_minimal.png" id="10_trceg"]
 [ext_resource type="Texture2D" uid="uid://d3wh6owxr02uq" path="res://art/minerals/mountain/titanium_3x3_minimal.png" id="11_a8y0u"]
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_85g3d"]
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_trceg"]
 noise_type = 3
 
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_choun"]
-noise = SubResource("FastNoiseLite_85g3d")
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_a8y0u"]
+noise = SubResource("FastNoiseLite_trceg")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_85g3d"]
 resource_name = "mountain"
@@ -1979,8 +1979,8 @@ script = ExtResource("1_t1omg")
 script = ExtResource("6_l54ba")
 
 [node name="Overworld" type="Node2D" parent="."]
-script = ExtResource("4_85g3d")
-noise_texture = SubResource("NoiseTexture2D_choun")
+script = ExtResource("3_trceg")
+noise_texture = SubResource("NoiseTexture2D_a8y0u")
 show_debug = false
 
 [node name="TerrainLayer" type="TileMapLayer" parent="Overworld"]
