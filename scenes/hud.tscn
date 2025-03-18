@@ -1,0 +1,47 @@
+[gd_scene load_steps=3 format=3 uid="uid://dpixvjjfeygfw"]
+
+[ext_resource type="Script" uid="uid://bq0g5biqhurlj" path="res://scripts/UI/HUD.gd" id="1_ahhtf"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ahhtf"]
+bg_color = Color(0.577566, 0.604099, 0.630029, 1)
+draw_center = false
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 1)
+
+[node name="HUD" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_right = 4.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ahhtf")
+
+[node name="Inspector" type="Control" parent="."]
+anchors_preset = 0
+offset_right = 232.0
+offset_bottom = 40.0
+
+[node name="InspectorColorRect" type="ColorRect" parent="Inspector"]
+layout_mode = 0
+offset_right = 232.0
+offset_bottom = 40.0
+color = Color(0.154876, 0.154876, 0.154876, 1)
+
+[node name="InspectorNameLabel" type="Label" parent="Inspector"]
+layout_mode = 0
+offset_right = 231.0
+offset_bottom = 40.0
+
+[node name="SelectPanel" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 52.0
+offset_right = 28.0
+offset_bottom = 69.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ahhtf")

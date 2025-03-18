@@ -2,4 +2,5 @@ class_name RedBush
 extends Plant
 
 func set_data() -> void:
-	plant_name = "red_bush"
+	cname = "red_bush"
+	inspector_name = "Red Bush"

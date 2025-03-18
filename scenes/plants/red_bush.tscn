@@ -1,20 +1,12 @@
-[gd_scene load_steps=4 format=3 uid="uid://dntkciarwm0de"]
+[gd_scene load_steps=3 format=3 uid="uid://cqcdm0matyuel"]
 
 [ext_resource type="Script" uid="uid://b8vohfer2hon0" path="res://scripts/PlantData/RedBush.gd" id="1_4p6gw"]
 [ext_resource type="Texture2D" uid="uid://b5h6s1ovb7xqu" path="res://art/plants/red_bush.png" id="2_58d32"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_o0j10"]
-size = Vector2(64, 64)
-
-[node name="RedBush" type="Area2D"]
+[node name="RedBush" type="Node2D"]
 script = ExtResource("1_4p6gw")
 metadata/_custom_type_script = "uid://b8vohfer2hon0"
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-texture_filter = 1
 texture = ExtResource("2_58d32")
 centered = false
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(32, 32)
-shape = SubResource("RectangleShape2D_o0j10")

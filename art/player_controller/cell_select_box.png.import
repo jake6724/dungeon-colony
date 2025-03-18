@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bccdyrv2jmbpx"
-path="res://.godot/imported/gold_3x3_minimal.png-21ce60017860d657bd04054a5d123eb6.ctex"
+uid="uid://ctk1lec0pgnl6"
+path="res://.godot/imported/cell_select_box.png-2bc30108c72bc80396e119f4d9633376.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/minerals/mountain/gold_3x3_minimal.png"
-dest_files=["res://.godot/imported/gold_3x3_minimal.png-21ce60017860d657bd04054a5d123eb6.ctex"]
+source_file="res://art/player_controller/cell_select_box.png"
+dest_files=["res://.godot/imported/cell_select_box.png-2bc30108c72bc80396e119f4d9633376.ctex"]
 
 [params]
 

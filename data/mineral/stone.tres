@@ -4,7 +4,8 @@
 
 [resource]
 script = ExtResource("1_s4bv4")
-name = "stone"
+cname = "stone"
+inspector_name = "Stone"
 terrain_id = 0
 vein_growth = 0.0
 vein_growth_reduction = 0.0

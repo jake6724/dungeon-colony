@@ -4,7 +4,8 @@
 
 [resource]
 script = ExtResource("1_mgbjr")
-name = "missing"
+cname = "missing"
+inspector_name = "FLOOR MISSING"
 id = 3
 layer = 0
 coords = Vector2(0, 0)

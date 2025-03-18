@@ -2,13 +2,13 @@ class_name Overworld
 extends Node2D
 
 @onready var main = get_tree().root.get_node("Main")
-@onready var ui = main.get_node("UI")
+# @onready var ui = main.get_node("UI")
 @onready var terrain_layer: TileMapLayer = get_node("TerrainLayer")
 @onready var structure_layer: TileMapLayer = get_node("StructureLayer")
 
 @export var noise_texture: NoiseTexture2D
-@export var grid_width: int = 150
-@export var grid_height: int = 150
+@export var grid_width: int = 200
+@export var grid_height: int = 200
 @export var cell_size: int = 64
 @export var show_debug: bool = true
 
@@ -16,6 +16,8 @@ var grid: Dictionary[Vector2, CellData] = {}
 var grid_area: int = grid_width * grid_height
 var noise: Noise
 var rng = RandomNumberGenerator.new()
+
+var cell_area = preload("res://scenes/cell_area.tscn")
 
 var floor_resources: Dictionary[String, Resource] = {
 	"mountain": preload("res://data/floor/mountain.tres"),
@@ -58,7 +60,7 @@ var water_threshold: float
 
 # Distance from min and max of noise map to spawn floor type. 
 # Higher values; more of that floor type
-var mountain_offset: float = .3
+var mountain_offset: float = .1
 var water_offset: float = .025
 
 # Used for specific reiteration after initial grid generation on certain tile types
@@ -91,10 +93,22 @@ func generateGrid():
 
 	for x in grid_width:
 		for y in grid_height:
+			# Access current positions noise value
 			var noise_point_value = noise.get_noise_2d(x,y)
+
+			# Create a new CellData object; this is not a node and is only an object stored in 'grid'
 			var new_cell:CellData = CellData.new(Vector2(x,y), gridToWorld(Vector2(x,y)), cell_size)
 			grid[new_cell.pos] = new_cell
+
+			# Create a new CellArea to detect collisons for new cell. This is an Area2D node and is added to tree
+			var new_cell_area: CellArea = cell_area.instantiate()
+			new_cell_area.position = new_cell.center
+			new_cell_area.cell_data = new_cell
+			self.add_child(new_cell_area)
+			
+			# Set floor tile for this new cell
 			calc_cell_floor_type(noise_point_value, new_cell)
+			
 			debug(x,y)
 
 ## Calculate what type of floor resource should be assigned to cell, based on grid_height values from NoiseTexture2D noise
@@ -116,13 +130,14 @@ func calc_cell_floor_type(noise_point_value, new_cell) -> void:
 		new_cell.floor_data = floor_resources["grass"]
 		refreshCellFloor(terrain_layer, new_cell.pos)
 
-		# Place tree
+		# Check if a plant should be placed on new grass cell
 		if r_plant < plant_threshold:
 			var plant: PackedScene = get_weighted_random(plant_spawn_chances)
 			var new_plant: Plant = plant.instantiate()
+			new_cell.plant_data = new_plant
 
-			if new_plant.plant_name == "oak_tree":
-				# For some reason trees are just fucking annoying, so manually place the root 1 cell up
+			if new_plant.cname == "oak_tree":
+				#trees are fucking annoying cause they take up more than 1 tile, so manually place the root 1 cell up
 				new_plant.position = get_pos_with_jitter(new_cell.world_pos + Vector2(0, (-1 * cell_size)))
 				self.add_child(new_plant)
 				new_plant.z_index = 2 # Move tree infront of other objects 
@@ -149,7 +164,7 @@ func refreshCellMineral(layer: StructureLayer, _pos: Vector2) -> void:
 func process_mountain_cells() -> void:
 	for cell in mountain_cells:
 		# Generate veins on non-stone minerals
-		if not (cell.occupier is MineralData and cell.occupier.name == "stone"):
+		if not (cell.occupier is MineralData and cell.occupier.cname == "stone"):
 			gen_mineral_vein(cell.mineral_data, cell.pos)
 
 	# Once mineral veins are created, update all mountain cells to trigger autotiling
@@ -177,7 +192,7 @@ func gen_mineral_vein_helper(mineral: MineralData, mineral_pos: Vector2, compute
 					var neighbor_mineral_cell = grid[mineral_pos + d]
 
 					# Only spawn if neighbor cell occupier is stone
-					if neighbor_mineral_cell.occupier is MineralData and neighbor_mineral_cell.occupier.name == "stone":
+					if neighbor_mineral_cell.occupier is MineralData and neighbor_mineral_cell.occupier.cname == "stone":
 						neighbor_mineral_cell.mineral_data = mineral
 						refreshCellMineral(structure_layer, neighbor_mineral_cell.pos)
 						gen_mineral_vein_helper(neighbor_mineral_cell.mineral_data, neighbor_mineral_cell.pos, 

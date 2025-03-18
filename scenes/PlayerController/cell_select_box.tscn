@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://myiefrdssod8"]
+
+[ext_resource type="Script" uid="uid://br2xwnuexblay" path="res://scripts/PlayerController/CellSelectBox.gd" id="1_nljde"]
+[ext_resource type="Texture2D" uid="uid://ctk1lec0pgnl6" path="res://art/player_controller/cell_select_box.png" id="2_bja6p"]
+
+[node name="CellSelectBox" type="Node2D"]
+script = ExtResource("1_nljde")
+metadata/_custom_type_script = "uid://br2xwnuexblay"
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_bja6p")
+centered = false

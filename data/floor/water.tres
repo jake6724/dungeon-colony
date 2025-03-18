@@ -4,6 +4,7 @@
 
 [resource]
 script = ExtResource("1_jkvyy")
-name = "water"
+cname = "water"
+inspector_name = "Water"
 id = 4
 coords = Vector2(0, 0)

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d6kub1tbxqvx"
-path="res://.godot/imported/iron_3x3_minimal.png-033de9bd3b3da27b856d976541be2c44.ctex"
+uid="uid://dpdnghncb3lp1"
+path="res://.godot/imported/oak_tree.png-cea92ebbc409ba3bf7e6aeaa6338d186.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/minerals/mountain/iron_3x3_minimal.png"
-dest_files=["res://.godot/imported/iron_3x3_minimal.png-033de9bd3b3da27b856d976541be2c44.ctex"]
+source_file="res://art/plants/oak_tree.png"
+dest_files=["res://.godot/imported/oak_tree.png-cea92ebbc409ba3bf7e6aeaa6338d186.ctex"]
 
 [params]
 

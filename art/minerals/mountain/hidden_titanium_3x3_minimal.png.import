@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://fyueul7juaj5"
-path="res://.godot/imported/copper_3x3_minimal.png-b75524603cb4d529c132c2fd79df1f82.ctex"
+uid="uid://bnadmvclevvfc"
+path="res://.godot/imported/hidden_titanium_3x3_minimal.png-dff7caf50daa9153a645c0c86868aa71.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/minerals/mountain/copper_3x3_minimal.png"
-dest_files=["res://.godot/imported/copper_3x3_minimal.png-b75524603cb4d529c132c2fd79df1f82.ctex"]
+source_file="res://art/minerals/mountain/hidden_titanium_3x3_minimal.png"
+dest_files=["res://.godot/imported/hidden_titanium_3x3_minimal.png-dff7caf50daa9153a645c0c86868aa71.ctex"]
 
 [params]
 

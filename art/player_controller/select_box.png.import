@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d3wh6owxr02uq"
-path="res://.godot/imported/titanium_3x3_minimal.png-c706b32c9d4ca955c1c21fbfb0ae0b03.ctex"
+uid="uid://eyl4m3r7x36y"
+path="res://.godot/imported/select_box.png-c10831420b8aa19c72344df9c7e56097.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/minerals/mountain/titanium_3x3_minimal.png"
-dest_files=["res://.godot/imported/titanium_3x3_minimal.png-c706b32c9d4ca955c1c21fbfb0ae0b03.ctex"]
+source_file="res://art/player_controller/select_box.png"
+dest_files=["res://.godot/imported/select_box.png-c10831420b8aa19c72344df9c7e56097.ctex"]
 
 [params]
 

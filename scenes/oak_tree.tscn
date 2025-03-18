@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://bpsavohudbbod"]
 
 [ext_resource type="Script" uid="uid://hxthya53ethx" path="res://scripts/PlantData/OakTree.gd" id="1_7e8fl"]
-[ext_resource type="Texture2D" uid="uid://dpdnghncb3lp1" path="res://art/plants/tree.png" id="2_f2lq6"]
+[ext_resource type="Texture2D" uid="uid://dpdnghncb3lp1" path="res://art/plants/oak_tree.png" id="2_f2lq6"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xx5h5"]
 size = Vector2(64, 128)

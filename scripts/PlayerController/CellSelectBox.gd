@@ -1,0 +1,2 @@
+class_name CellSelectBox
+extends Node2D

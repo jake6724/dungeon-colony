@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dpdnghncb3lp1"
-path="res://.godot/imported/tree.png-f161c93093b23284999af14a4281ac2a.ctex"
+uid="uid://cfi5a76tp3t8y"
+path="res://.godot/imported/hidden_gold_3x3_minimal.png-15c424aebaa9e543bb0f8890f8662ab4.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/plants/tree.png"
-dest_files=["res://.godot/imported/tree.png-f161c93093b23284999af14a4281ac2a.ctex"]
+source_file="res://art/minerals/mountain/hidden_gold_3x3_minimal.png"
+dest_files=["res://.godot/imported/hidden_gold_3x3_minimal.png-15c424aebaa9e543bb0f8890f8662ab4.ctex"]
 
 [params]
 

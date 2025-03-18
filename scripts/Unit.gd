@@ -32,13 +32,13 @@ func move(delta):
 			pos = ow.worldToGrid(position)
 			position += (path[0] - position).normalized() * data.speed * delta  
 
-func _input(event):
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		if event.pressed:
-			var clicked = ow.worldToGrid(get_global_mouse_position())
+# func _input(event):
+# 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+# 		if event.pressed:
+# 			var clicked = ow.worldToGrid(get_global_mouse_position())
 
-			if ow.grid.has(ow.worldToGrid(clicked)):
-				path = pf.getPath(pos, clicked)
+# 			if ow.grid.has(ow.worldToGrid(clicked)):
+# 				path = pf.getPath(pos, clicked)
 			
-			else: 
-				print("Invalid target cell")
+# 			else: 
+# 				print("Invalid target cell")

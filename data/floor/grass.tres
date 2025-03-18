@@ -4,7 +4,7 @@
 
 [resource]
 script = ExtResource("1_whpe6")
-name = "grass"
+cname = "grass"
+inspector_name = "Grass"
 id = 1
-layer = 0
 coords = Vector2(0, 0)

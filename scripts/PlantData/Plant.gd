@@ -1,10 +1,9 @@
 class_name Plant
-extends Area2D
+extends Node2D
 
 @onready var sprite = $Sprite2D
-@onready var collision = $CollisionShape2D
-
-var plant_name: String = ""
+var cname = ""
+var inspector_name = ""
 
 func _init():
 	set_data()

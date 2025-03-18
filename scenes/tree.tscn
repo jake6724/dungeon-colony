@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://dh4cqka53wb0s"]
 
-[ext_resource type="Texture2D" uid="uid://dpdnghncb3lp1" path="res://art/plants/tree.png" id="1_avsvi"]
+[ext_resource type="Texture2D" uid="uid://dpdnghncb3lp1" path="res://art/plants/oak_tree.png" id="1_avsvi"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_avsvi"]
 radius = 30.0

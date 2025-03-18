@@ -45,6 +45,15 @@ var mineral_data: Resource = null:
 	get:
 		return mineral_data
 
+var plant_data: Plant = null:
+	set(value):
+		plant_data = value
+		occupier = value
+		is_navigable = false
+		emit_signal("cellChanged", pos)
+	get:
+		return plant_data
+
 # Convert this to store the object on it  ?????
 var occupier = null:
 	set(value):

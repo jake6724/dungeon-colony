@@ -4,7 +4,8 @@
 
 [resource]
 script = ExtResource("1_p1nfq")
-name = "gold"
+cname = "gold"
+inspector_name = "Gold"
 terrain_id = 4
 vein_growth = 10.0
 vein_growth_reduction = 2.5

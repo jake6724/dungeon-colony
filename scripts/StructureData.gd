@@ -1,7 +1,7 @@
 class_name StructureData
 extends Resource
 
-@export var name: String
+@export var cname: String
 @export var coords: Vector2 = Vector2(0, 0)
 @export var id: int = 0
 @export var texture: Texture
