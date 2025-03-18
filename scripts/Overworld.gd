@@ -7,8 +7,8 @@ extends Node2D
 @onready var structure_layer: TileMapLayer = get_node("StructureLayer")
 
 @export var noise_texture: NoiseTexture2D
-@export var grid_width: int = 200
-@export var grid_height: int = 200
+@export var grid_width: int = 100
+@export var grid_height: int = 100
 @export var cell_size: int = 64
 @export var show_debug: bool = true
 

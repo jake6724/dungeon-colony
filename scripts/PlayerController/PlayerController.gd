@@ -115,14 +115,13 @@ func on_select_panel_area_entered(entering_cell_area):
 			entering_cell_area.cell_select_box = new_cell_select_box
 			# Set the position of new_cell_select_box and spawn it in the world
 			new_cell_select_box.position = entering_cell_area.cell_data.world_pos
-			# add_child(new_cell_select_box)
+			add_child(new_cell_select_box)
 
 func on_select_panel_area_exited(exiting_cell_area):
 	if exiting_cell_area is CellArea:
-		# print("Exiting area: ", exiting_cell_area)
 		var index = selected_cell_area_array.find(exiting_cell_area)
 		selected_cell_area_array.remove_at(index)
-		# exiting_cell_area.cell_select_box.queue_free()
+		exiting_cell_area.cell_select_box.queue_free()
 
 ## Reset select_panel and all of the data it tracks
 func reset_select_panel():
@@ -130,8 +129,8 @@ func reset_select_panel():
 	select_panel_collision.disabled = true
 	select_panel.size = Vector2()
 	clear_selected_cells_array()
-	# clear_cell_select_box_array()
-	# clear_selected_cell_area_array()
+	clear_cell_select_box_array()
+	clear_selected_cell_area_array()
 
 func clear_cell_select_box_array() -> void:
 	for i in range(len(cell_select_box_array)):
