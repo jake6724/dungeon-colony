@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://c0iosa5yrvqdb"]
 
 [ext_resource type="Script" uid="uid://c0kgqlfnxwsnv" path="res://scripts/Unit.gd" id="1_icqpx"]
-[ext_resource type="Texture2D" uid="uid://of0wd5cgcmh2" path="res://art/colonist.png" id="2_katyl"]
+[ext_resource type="Texture2D" uid="uid://bafltya7re4a5" path="res://art/units/colonist.png" id="2_fqlnf"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rtl34"]
 size = Vector2(64, 64)
@@ -14,7 +14,7 @@ script = ExtResource("1_icqpx")
 z_index = 1
 texture_filter = 1
 scale = Vector2(0.5, 0.5)
-texture = ExtResource("2_katyl")
+texture = ExtResource("2_fqlnf")
 centered = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

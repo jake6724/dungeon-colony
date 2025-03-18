@@ -1,33 +1,33 @@
 [gd_resource type="TileSet" load_steps=11 format=3 uid="uid://c2x727eekxfqf"]
 
-[ext_resource type="Texture2D" uid="uid://haalkkxbi1ns" path="res://art/dirt.png" id="1_iu7js"]
-[ext_resource type="Texture2D" uid="uid://c5mky0ai6xeri" path="res://art/grass.png" id="2_sp3s1"]
-[ext_resource type="Texture2D" uid="uid://bicwskmpyu0yq" path="res://art/mountain.png" id="3_i86cb"]
-[ext_resource type="Texture2D" uid="uid://2irs61686wgh" path="res://art/no_floor.png" id="4_fctl1"]
-[ext_resource type="Texture2D" uid="uid://bj4uo8ifo8347" path="res://art/water.png" id="5_yj5tt"]
+[ext_resource type="Texture2D" uid="uid://b2bps0d4nb843" path="res://art/floor/dirt.png" id="1_3rsop"]
+[ext_resource type="Texture2D" uid="uid://b22y5h661ldcl" path="res://art/floor/grass.png" id="2_ta1gd"]
+[ext_resource type="Texture2D" uid="uid://cyju7v0c2luck" path="res://art/floor/mountain.png" id="3_nvcuw"]
+[ext_resource type="Texture2D" uid="uid://dldk1q3sy0yio" path="res://art/floor/no_floor.png" id="4_qxw6g"]
+[ext_resource type="Texture2D" uid="uid://c6k8i748qu23n" path="res://art/floor/water.png" id="5_n6qs7"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_bhmap"]
-texture = ExtResource("1_iu7js")
+texture = ExtResource("1_3rsop")
 texture_region_size = Vector2i(64, 64)
 0:0/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_fcyjg"]
-texture = ExtResource("2_sp3s1")
+texture = ExtResource("2_ta1gd")
 texture_region_size = Vector2i(64, 64)
 0:0/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_7yfy3"]
-texture = ExtResource("3_i86cb")
+texture = ExtResource("3_nvcuw")
 texture_region_size = Vector2i(64, 64)
 0:0/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_u8qgb"]
-texture = ExtResource("4_fctl1")
+texture = ExtResource("4_qxw6g")
 texture_region_size = Vector2i(64, 64)
 0:0/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ug03j"]
-texture = ExtResource("5_yj5tt")
+texture = ExtResource("5_n6qs7")
 texture_region_size = Vector2i(64, 64)
 0:0/0 = 0
 
