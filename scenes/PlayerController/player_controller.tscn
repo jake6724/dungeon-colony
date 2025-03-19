@@ -5,12 +5,12 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_y1ejb"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y1ejb"]
-bg_color = Color(0.611765, 0.807843, 0.964706, 0.196078)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.211008, 0.538658, 0.767535, 0.372549)
+bg_color = Color(0.345098, 0.662745, 0.898039, 0)
+border_width_left = 7
+border_width_top = 7
+border_width_right = 7
+border_width_bottom = 7
+border_color = Color(0.828052, 0.840857, 0.839238, 0.796078)
 
 [node name="PlayerController" type="Node2D"]
 script = ExtResource("1_y1ejb")

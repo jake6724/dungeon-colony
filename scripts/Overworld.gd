@@ -17,7 +17,8 @@ var grid_area: int = grid_width * grid_height
 var noise: Noise
 var rng = RandomNumberGenerator.new()
 
-var cell_area = preload("res://scenes/cell_area.tscn")
+@onready var cell_area:PackedScene = preload("res://scenes/PlayerController/cell_area.tscn")
+@onready var cell_select_box: PackedScene = preload("res://scenes/PlayerController/cell_select_box.tscn")
 
 var floor_resources: Dictionary[String, Resource] = {
 	"mountain": preload("res://data/floor/mountain.tres"),
@@ -105,6 +106,14 @@ func generateGrid():
 			new_cell_area.position = new_cell.center
 			new_cell_area.cell_data = new_cell
 			self.add_child(new_cell_area)
+
+			# Go ahead and pop a cell_select_box on this bitch
+			var new_cell_select_box: CellSelectBox = cell_select_box.instantiate()
+			new_cell_area.cell_select_box = new_cell_select_box
+			self.add_child(new_cell_select_box)
+			new_cell_select_box.position = new_cell.world_pos
+			new_cell_area.cell_select_box.sprite.visible = false
+
 			
 			# Set floor tile for this new cell
 			calc_cell_floor_type(noise_point_value, new_cell)

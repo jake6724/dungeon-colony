@@ -16,7 +16,6 @@ extends Node2D
 @onready var cell_select_box: PackedScene = preload("res://scenes/PlayerController/cell_select_box.tscn")
 
 var areas_entered: int = 0
-var selected_cell_area_array: Array[CellArea] = []
 
 var cell_select_box_array: Array[CellSelectBox] = []
 var selected_cell_array: Array[CellData] = []
@@ -29,6 +28,7 @@ var is_selecting: bool
 var is_selecting_occupiers: bool = false
 var is_selecting_floors: bool = false
 var selection_mismatch: bool = false
+var on_select_panel_area_entered_count = 0
 
 func _ready():
 	pass
@@ -53,22 +53,6 @@ func _process(_delta):
 
 		select_panel_collision.position = selection_rect.position + (selection_rect.size / 2)
 		select_panel_collision.shape.size = selection_rect.size
-
-		# # Find all cells to prune 
-		# print("selected_cell_area_array: ", selected_cell_area_array)
-		# for i in range(len(selected_cell_area_array)):
-		# 	var point = selected_cell_area_array[i].cell_data.center
-		# 	if not (selection_rect.has_point(point)):
-		# 		cell_index_to_remove_array.append(i)
-
-		# # Prune de-selected cells
-		# print("cell_index_to_remove_array: ", cell_index_to_remove_array)
-		# if cell_index_to_remove_array.size() > 0:
-		# 	for index in cell_index_to_remove_array:
-		# 		selected_cell_area_array[index].queue_free()
-		# 		# selected_cell_area_array[i].cell_select_box.queue_free()
-		# 		selected_cell_area_array.remove_at(index)
-		
 				
 		# End position is wrong and needs to be set diff.
 		# Probably needs to be the current mouse position ? 
@@ -99,46 +83,49 @@ func _input(event):
 	
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
 		if event.pressed:
-			is_selecting = false
 			reset_select_panel()
-			select_panel.size = Vector2()
 
 func on_select_panel_area_entered(entering_cell_area):
 	# Only process if intruder is CellArea type
 	if entering_cell_area is CellArea:
-		# print("Entering area: ", entering_cell_area)
-		# Ensure that cell area has not already been detected then add to array of selected
-		if not (entering_cell_area in selected_cell_area_array):
-			selected_cell_area_array.append(entering_cell_area)
-			# Create a new_cell_select_box and link it to the detected cell area
-			var new_cell_select_box: CellSelectBox = cell_select_box.instantiate()
-			entering_cell_area.cell_select_box = new_cell_select_box
-			# Set the position of new_cell_select_box and spawn it in the world
-			new_cell_select_box.position = entering_cell_area.cell_data.world_pos
-			add_child(new_cell_select_box)
+		entering_cell_area.is_selected = true
+		entering_cell_area.cell_select_box.sprite.visible = true
+
+# func on_select_panel_area_entered(entering_cell_area):
+# 	# Only process if intruder is CellArea type
+# 	if entering_cell_area is CellArea:
+# 		if entering_cell_area.cell_data:
+# 			if entering_cell_area.cell_data.occupier: 
+# 				if entering_cell_area.cell_data.occupier is Plant:
+# 				# print("Entering area: ", entering_cell_area)
+# 				# Ensure that cell area has not already been selected and if not, mark as selected
+# 					if not (entering_cell_area.is_selected):
+# 						on_select_panel_area_entered_count += 1
+# 						# print("on_select_panel_area_entered_count: ", on_select_panel_area_entered_count)
+# 						entering_cell_area.is_selected = true
+# 						entering_cell_area.cell_select_box.sprite.visible = true
+# 						# # #Create a new_cell_select_box and link it to the detected cell area
+# 						# var new_cell_select_box: CellSelectBox = cell_select_box.instantiate()
+# 						# entering_cell_area.cell_select_box = new_cell_select_box
+# 						# # #Set the position of new_cell_select_box and spawn it in the world
+# 						# new_cell_select_box.position = entering_cell_area.cell_data.world_pos
+# 						# add_child(new_cell_select_box)
 
 func on_select_panel_area_exited(exiting_cell_area):
+	# print("on_select_panel_area_exited called")
 	if exiting_cell_area is CellArea:
-		var index = selected_cell_area_array.find(exiting_cell_area)
-		selected_cell_area_array.remove_at(index)
-		exiting_cell_area.cell_select_box.queue_free()
+		if exiting_cell_area.is_selected == true:
+			exiting_cell_area.is_selected = false
+			exiting_cell_area.cell_select_box.sprite.visible = false
+			# exiting_cell_area.cell_select_box.queue_free()
 
-## Reset select_panel and all of the data it tracks
+## Reset select_panel, clear `selected_cells_array`
 func reset_select_panel():
 	is_selecting = false
 	select_panel_collision.disabled = true
+	select_panel_collision.shape.size = Vector2()
 	select_panel.size = Vector2()
 	clear_selected_cells_array()
-	clear_cell_select_box_array()
-	clear_selected_cell_area_array()
-
-func clear_cell_select_box_array() -> void:
-	for i in range(len(cell_select_box_array)):
-		cell_select_box_array[i].free()
-	cell_select_box_array.clear()
-
-func clear_selected_cell_area_array() -> void:
-	selected_cell_area_array.clear()
 
 func clear_selected_cells_array() -> void:
 	selected_cell_array.clear()
