@@ -16,9 +16,9 @@ border_color = Color(0.828052, 0.840857, 0.839238, 0.796078)
 script = ExtResource("1_y1ejb")
 metadata/_custom_type_script = "uid://cxnccd8rabpvm"
 
-[node name="Area2D" type="Area2D" parent="."]
+[node name="SelectPanelArea" type="Area2D" parent="."]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+[node name="SelectPanelCollision" type="CollisionShape2D" parent="SelectPanelArea"]
 position = Vector2(10, 10)
 shape = SubResource("RectangleShape2D_y1ejb")
 

@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bwcx32mrvola1"]
 
-[ext_resource type="Script" uid="uid://bcc6fe6pvdovj" path="res://scenes/LoadingScreen.gd" id="1_ep5rh"]
+[ext_resource type="Script" uid="uid://vmc8dsjqt02x" path="res://scripts/LoadingScreen.gd" id="1_ep5rh"]
 
 [node name="LoadingScreen" type="Control"]
 layout_mode = 3
@@ -11,7 +11,12 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_ep5rh")
 
-[node name="ColorRect" type="ColorRect" parent="."]
+[node name="Control" type="Control" parent="."]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="ColorRect" type="ColorRect" parent="Control"]
 layout_mode = 0
 offset_right = 2304.0
 offset_bottom = 1296.0

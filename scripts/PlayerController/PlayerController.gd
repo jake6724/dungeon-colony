@@ -1,142 +1,215 @@
 class_name PlayerController
 extends Node2D
 
+# Scene Node references 
 @onready var main = get_tree().root.get_node("Main")
-@onready var ow = main.get_node("Overworld")
-
+@onready var ow: Overworld = main.get_node("Overworld")
 @onready var ui = main.get_node("CanvasLayer").get_node("UI")
 @onready var hud: HUD = ui.get_node("HUD")
+@onready var camera: Camera2D = main.get_node("Camera2D")
 
-# TESTING 
+# Children references 
 @onready var select_panel: Panel = $SelectPanel
-@onready var select_panel_area: Area2D = $Area2D
-@onready var select_panel_collision: CollisionShape2D = $Area2D/CollisionShape2D
+@onready var select_panel_area: Area2D = $SelectPanelArea
+@onready var select_panel_collision: CollisionShape2D = $SelectPanelArea/SelectPanelCollision
 @onready var select_panel_collision_shape: Shape2D = select_panel_collision.shape
-
 @onready var cell_select_box: PackedScene = preload("res://scenes/PlayerController/cell_select_box.tscn")
 
-var areas_entered: int = 0
+# Signals 
+signal cell_area_selection_changed
 
-var cell_select_box_array: Array[CellSelectBox] = []
-var selected_cell_array: Array[CellData] = []
-var cell_index_to_remove_array: Array[int]
-
-var selection_start
-var selection_rect
+# Cell selection data
+var selected_cell_area_array: Array[CellArea] = []
+var selection_start: Vector2
+var current_mouse_position: Vector2
+var selection_rect: Rect2
 var is_selecting: bool
 
-var is_selecting_occupiers: bool = false
-var is_selecting_floors: bool = false
-var selection_mismatch: bool = false
-var on_select_panel_area_entered_count = 0
+# HUD update data
+var is_selected_cell_area_array_homogenous: bool
+var selected_cell_area_array_inspector_name: String
+
+# Select mode data
+var current_select_mode: String
 
 func _ready():
-	pass
 	select_panel_area.area_entered.connect(on_select_panel_area_entered)
 	select_panel_area.area_exited.connect(on_select_panel_area_exited)
+	select_panel_collision.disabled = true
+	select_panel_area.collision_layer = Constants.layer_mapping["no_collision"]
+	select_panel_area.collision_mask = Constants.layer_mapping["plant"]
+
+	# Connect to HUD select mode signal
+	hud.select_mode_changed.connect(on_select_mode_changed)
 
 func _process(_delta):
+	if Input.is_action_just_released("left_click"):
+		reset_select_panel_preserve_selected()
+		update_hud_data()
+		cell_area_selection_changed.emit()
+		return
 
-	# pass
 	if is_selecting:
-		if Input.is_action_just_released("left_click"):
-			reset_select_panel()
-			return
-
 		# Continuously update the selection rectangle to match the mouse position
-		var current_mouse_position = get_global_mouse_position()
-
+		# select_panel and select_panel_area are set to match this rectangle, it does not interact with cells
+		current_mouse_position = get_global_mouse_position()
 		selection_rect = Rect2(selection_start, current_mouse_position - selection_start).abs()
 
-		select_panel.position = selection_rect.position
-		select_panel.size = selection_rect.size
+		if selection_rect.size > Vector2(1,1):
+			# Select panel is a visual indicator for player. 
+			# select_panel_area and collision actually detect cell area collisions
+			select_panel.position = selection_rect.position
+			select_panel.size = selection_rect.size
 
-		select_panel_collision.position = selection_rect.position + (selection_rect.size / 2)
-		select_panel_collision.shape.size = selection_rect.size
-				
-		# End position is wrong and needs to be set diff.
-		# Probably needs to be the current mouse position ? 
-		# Also don't trust console outputs when outputting this much data
-
-		# Find the area of the rectangle
-		# Find the starting position and end position of the rectangle
-		# Calculate all the points in between those points
-
-		# print("Start vector: ", selection_start)
-		# print("End vector: ", current_mouse_position - selection_start)
-		# print("Start vector[grid]: ", ow.worldToGrid(selection_start))
-		# print("End vector[grid]: ", ow.worldToGrid(current_mouse_position - selection_start))
-		# print("SelectionRect size ", selection_rect.size)
+			select_panel_collision.position = selection_rect.position + (selection_rect.size / 2) # scales out from center for some reason
+			select_panel_collision.shape.size = selection_rect.size
 
 func _input(event):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		# Handle double clicking
+
+		# TODO: Double clicking shouldn't care about select mode; instead it should just select
+		# every cell_area that has the same occupier cname(?) as the object that was just double clicked
+		if event.double_click:
+			select_panel.visible = false
+			select_panel_collision.disabled = false
+
+			var new_size = Vector2((get_viewport().size)) / camera.zoom
+			var new_position = camera.position - (new_size / 2)
+
+			select_panel.size = new_size
+			select_panel.position = new_position
+
+			select_panel_collision.shape.size = new_size
+			select_panel_collision.position = new_position + (new_size / 2)
+			return # Do not continue to process input
+		
 		if event.pressed:
-			# Start Selection
+			# Only reset previously selected data if shift is not held during current click
+			if not(Input.is_action_pressed("shift")):
+				release_selected()
+
+			# Handle individual cell selection
+			# TODO: Does this need to take into account the select mode ? 
+			selection_start = get_global_mouse_position()
+			var selection_start_grid_pos = ow.worldToGrid(selection_start)
+			if ow.grid.has(selection_start_grid_pos):
+				# Get a reference to the CellArea, through the CellData. Do not store CellData (linked in CellArea)
+				var selected_cell_area: CellArea = ow.grid[ow.worldToGrid(selection_start)].cell_area
+				if selected_cell_area is CellArea:
+					# This and the elif below have a similar relationship and function to on_area_entered/exited
+					if not selected_cell_area.is_selected:
+						# TODO: This needs to support unit selection as well
+						if selected_cell_area.cell_data.occupier: # Only select cells with occupiers
+							selected_cell_area.is_selected = true
+							selected_cell_area_array.append(selected_cell_area)
+							selected_cell_area.cell_select_box.sprite.visible = true
+							update_hud_data()
+							cell_area_selection_changed.emit()
+							
+
+					# If a cell is already selected and shift clicked, deselect it
+					elif selected_cell_area.is_selected and Input.is_action_pressed("shift"):
+						release_specific_cell_area(selected_cell_area)
+						update_hud_data()
+						cell_area_selection_changed.emit()
+						# Don't continue and turn on select panel, it will just readd the cell that was just released
+						return
+
+			# Handle select panel selection. This allows _process to start tracking the mouse
 			is_selecting = true
 			select_panel_collision.disabled = false
-			selection_start = get_global_mouse_position()
 			select_panel.position = selection_start
 			select_panel.size = Vector2()
-
+			select_panel.visible = true # This may have been hidden by double click
 			select_panel_collision.position = selection_start
 			select_panel_collision.shape.size = Vector2()
 	
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
 		if event.pressed:
-			reset_select_panel()
+			reset_select_panel_release_selected()
+			update_hud_data()
+			cell_area_selection_changed.emit()
+
+func on_select_mode_changed(new_select_mode: String) -> void:
+	current_select_mode = new_select_mode
+	# Set select_panel_area collision mask based on select mode 
+	select_panel_area.collision_mask = Constants.layer_mapping[current_select_mode]
 
 func on_select_panel_area_entered(entering_cell_area):
-	# Only process if intruder is CellArea type
 	if entering_cell_area is CellArea:
-		entering_cell_area.is_selected = true
-		entering_cell_area.cell_select_box.sprite.visible = true
-
-# func on_select_panel_area_entered(entering_cell_area):
-# 	# Only process if intruder is CellArea type
-# 	if entering_cell_area is CellArea:
-# 		if entering_cell_area.cell_data:
-# 			if entering_cell_area.cell_data.occupier: 
-# 				if entering_cell_area.cell_data.occupier is Plant:
-# 				# print("Entering area: ", entering_cell_area)
-# 				# Ensure that cell area has not already been selected and if not, mark as selected
-# 					if not (entering_cell_area.is_selected):
-# 						on_select_panel_area_entered_count += 1
-# 						# print("on_select_panel_area_entered_count: ", on_select_panel_area_entered_count)
-# 						entering_cell_area.is_selected = true
-# 						entering_cell_area.cell_select_box.sprite.visible = true
-# 						# # #Create a new_cell_select_box and link it to the detected cell area
-# 						# var new_cell_select_box: CellSelectBox = cell_select_box.instantiate()
-# 						# entering_cell_area.cell_select_box = new_cell_select_box
-# 						# # #Set the position of new_cell_select_box and spawn it in the world
-# 						# new_cell_select_box.position = entering_cell_area.cell_data.world_pos
-# 						# add_child(new_cell_select_box)
+		if not entering_cell_area.is_selected: # Check if already selected ? 
+			entering_cell_area.preserve = false
+			selected_cell_area_array.append(entering_cell_area)
+			entering_cell_area.is_selected = true
+			entering_cell_area.cell_select_box.sprite.visible = true
 
 func on_select_panel_area_exited(exiting_cell_area):
-	# print("on_select_panel_area_exited called")
+	# Only process if intruder is CellArea type, clear selected var and make cell_select_box invisible
 	if exiting_cell_area is CellArea:
-		if exiting_cell_area.is_selected == true:
-			exiting_cell_area.is_selected = false
-			exiting_cell_area.cell_select_box.sprite.visible = false
-			# exiting_cell_area.cell_select_box.queue_free()
+		if exiting_cell_area.is_selected:
+			if not exiting_cell_area.preserve:
+				release_specific_cell_area(exiting_cell_area)
 
-## Reset select_panel, clear `selected_cells_array`
-func reset_select_panel():
+func reset_select_panel_preserve_selected():
 	is_selecting = false
+	preserve_selected_cell_areas()
+	select_panel.size = Vector2()
 	select_panel_collision.disabled = true
 	select_panel_collision.shape.size = Vector2()
+
+func preserve_selected_cell_areas() -> void:
+	for cell_area in selected_cell_area_array:
+		cell_area.preserve = true
+
+func reset_select_panel_release_selected():
+	is_selecting = false
+	release_selected()
 	select_panel.size = Vector2()
-	clear_selected_cells_array()
+	select_panel_collision.disabled = true
+	select_panel_collision.shape.size = Vector2()
+	clear_selected_cell_area_array()
 
-func clear_selected_cells_array() -> void:
-	selected_cell_array.clear()
+func release_selected() -> void:
+	for cell_area in selected_cell_area_array:
+		cell_area.preserve = false
+		cell_area.is_selected = false
+		cell_area.cell_select_box.sprite.visible = false
 
-## Check that the occupier objects of all CellData objects in the array have the same 'cname' value
+	clear_selected_cell_area_array()
+
+func release_specific_cell_area(selected_cell_area) -> void:
+	selected_cell_area.preserve = false
+	selected_cell_area.is_selected = false
+	selected_cell_area.cell_select_box.sprite.visible = false
+	var index = selected_cell_area_array.find(selected_cell_area)
+	selected_cell_area_array.remove_at(index)
+
+func clear_selected_cell_area_array() -> void:
+	selected_cell_area_array.clear()
+
+## Update data that HUD uses to display inspector data. Does NOT handle emitting collision detection signals
+func update_hud_data() -> void:
+	# TODO:  This assumes that each CellArea's CellData has an occupier. Could be an issue in the future
+	# Will need more logic based on select mode
+	is_selected_cell_area_array_homogenous = is_array_one_occupier_name(selected_cell_area_array)
+	if is_selected_cell_area_array_homogenous:
+		if selected_cell_area_array.size() > 0:
+			selected_cell_area_array_inspector_name = selected_cell_area_array[0].cell_data.occupier.inspector_name
+		else:
+			selected_cell_area_array_inspector_name = ""
+
+## Check that the occupier objects of all CellData objects in the array have the same 'cname' value. 
+## Returns false if `array` is empty
 func is_array_one_occupier_name(array) -> bool:
-	var match_cname = array[0].occupier.cname
-	for i in array.slice(1,array.size()):
-		var curr_cname = i.occupier.cname
-		if not (curr_cname == match_cname):
-			return false
+	if array.size() > 0:
+		var match_cname = array[0].cell_data.occupier.cname
+		for cell_area in array.slice(1,array.size()):
+			var curr_cname = cell_area.cell_data.occupier.cname
+			if not (curr_cname == match_cname):
+				return false
+	else:
+		return false
 	return true
 
 ## Check that the floor_data objects of all CellData objects in the array have the same 'cname' value
@@ -147,69 +220,3 @@ func is_array_one_floor_name(array) -> bool:
 		if not (curr_cname == match_cname):
 			return false
 	return true
-
-	# if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-	# 	if event.pressed:
-	# 		var clicked_world_pos: Vector2 = get_global_mouse_position()
-	# 		var clicked_grid_pos: Vector2 = ow.worldToGrid(clicked_world_pos)
-
-	# 		if ow.grid.has(clicked_grid_pos):
-	# 			var selected_cell = ow.grid[clicked_grid_pos]
-	# 			var new_cell_select_box: CellSelectBox = cell_select_box.instantiate()
-	# 			new_cell_select_box.position = selected_cell.world_pos
-
-	# 			# If shift clicking, add cell to already selected
-	# 			if Input.is_action_pressed("shift"):
-	# 				if selected_cell not in selected_cell_array: 
-	# 					cell_select_box_array.append(new_cell_select_box)
-	# 					selected_cell_array.append(selected_cell)
-	# 					add_child(new_cell_select_box)
-
-	# 			# Else, Clear all previously selected cells and add newly selected cell
-	# 			else:
-	# 				clear_cell_select_box_array()
-	# 				clear_selected_cells_array()
-	# 				cell_select_box_array.append(new_cell_select_box)
-	# 				selected_cell_array.append(selected_cell)
-	# 				add_child(new_cell_select_box)
-
-	# 			if selected_cell_array.size() == 1:
-	# 				selection_mismatch = false
-	# 				if selected_cell.occupier:
-	# 					is_selecting_occupiers = true
-	# 					is_selecting_floors = false
-	# 				elif selected_cell.floor_data:
-	# 					is_selecting_floors = true
-	# 					is_selecting_occupiers = false
-
-	# 			if selection_mismatch:
-	# 				return
-
-	# 			else:
-	# 				if is_selecting_occupiers and selected_cell.occupier == null:
-	# 					hud.set_inspector_name_label_text("Multiple objects selected")
-	# 					selection_mismatch = true
-	# 					return
-	# 				elif is_selecting_floors and selected_cell.occupier:
-	# 					hud.set_inspector_name_label_text("Multiple tiles selected")
-	# 					selection_mismatch = true
-	# 					return
-
-	# 			if selected_cell.occupier:
-	# 				if selected_cell_array.size() == 1:
-	# 					hud.set_inspector_name_label_text(selected_cell.occupier.inspector_name)
-	# 				else:
-	# 					if is_array_one_occupier_name(selected_cell_array):
-	# 						var text = selected_cell.occupier.inspector_name + " x" + str(cell_select_box_array.size())
-	# 						hud.set_inspector_name_label_text(text)
-	# 					else:
-	# 						hud.set_inspector_name_label_text("Multiple objects selected")
-	# 			elif selected_cell.floor_data:
-	# 				if selected_cell_array.size() == 1:
-	# 					hud.set_inspector_name_label_text(selected_cell.floor_data.inspector_name)
-	# 				else:
-	# 					if is_array_one_floor_name(selected_cell_array):
-	# 						var text = selected_cell.floor_data.inspector_name + " x" + str(cell_select_box_array.size())
-	# 						hud.set_inspector_name_label_text(text)
-	# 					else:
-	# 						hud.set_inspector_name_label_text("Multiple tiles selected")

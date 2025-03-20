@@ -1,15 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://dpixvjjfeygfw"]
+[gd_scene load_steps=2 format=3 uid="uid://dpixvjjfeygfw"]
 
 [ext_resource type="Script" uid="uid://bq0g5biqhurlj" path="res://scripts/UI/HUD.gd" id="1_ahhtf"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ahhtf"]
-bg_color = Color(0.577566, 0.604099, 0.630029, 1)
-draw_center = false
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(1, 1, 1, 1)
 
 [node name="HUD" type="Control"]
 layout_mode = 3
@@ -38,10 +29,46 @@ layout_mode = 0
 offset_right = 231.0
 offset_bottom = 40.0
 
-[node name="SelectPanel" type="Panel" parent="."]
-layout_mode = 0
-offset_left = 9.0
-offset_top = 52.0
-offset_right = 28.0
-offset_bottom = 69.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_ahhtf")
+[node name="SelectModeContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -304.5
+offset_top = -150.0
+offset_right = 304.5
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="ChopWoodButton" type="Button" parent="SelectModeContainer"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+text = "Chop Wood"
+
+[node name="MineButton" type="Button" parent="SelectModeContainer"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+text = "Mine
+"
+
+[node name="HarvestButton" type="Button" parent="SelectModeContainer"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+text = "Harvest"
+
+[node name="StructureButton" type="Button" parent="SelectModeContainer"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+text = "Structure"
+
+[node name="ItemButton" type="Button" parent="SelectModeContainer"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+text = "Item"
+
+[node name="UnitButton" type="Button" parent="SelectModeContainer"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+text = "Unit"

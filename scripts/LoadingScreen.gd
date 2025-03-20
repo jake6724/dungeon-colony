@@ -1,6 +1,10 @@
 class_name LoadingScreen
 extends Control
 
+var count: int = 0
+
+var thread: Thread
+
 @onready var main = get_tree().root.get_node("Main")
 @onready var ow : Overworld = main.get_node("Overworld")
 @onready var pf: PathFinder = ow.get_node("PathFinding")
@@ -14,8 +18,9 @@ extends Control
 @onready var path_finding_add_points_progress_bar: ProgressBar = $ProgressBarVBox/PathFindingAddPointsProgressBar
 @onready var path_finding_connect_points_progress_bar: ProgressBar = $ProgressBarVBox/PathFindingConnectPointsProgressBar
 
-func update_progress_bar(progress_bar: ProgressBar, new_progress: float):
-	progress_bar.value = new_progress
+func _process(_delta):
+	pass
 
-func test():
-	print("test")
+func update_progress_bar(progress_bar: ProgressBar, new_progress: float):
+	# print("Update progress: ", new_progress)
+	progress_bar.value = new_progress

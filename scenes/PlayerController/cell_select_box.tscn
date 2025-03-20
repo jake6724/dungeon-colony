@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://ctk1lec0pgnl6" path="res://art/player_controller/cell_select_box.png" id="2_bja6p"]
 
 [node name="CellSelectBox" type="Node2D"]
+z_index = 100
 script = ExtResource("1_nljde")
 metadata/_custom_type_script = "uid://br2xwnuexblay"
 

@@ -7,13 +7,13 @@ extends Node2D
 @onready var structure_layer: TileMapLayer = get_node("StructureLayer")
 
 @export var noise_texture: NoiseTexture2D
-@export var grid_width: int = 100
-@export var grid_height: int = 100
+@export var grid_width: int = 200
+@export var grid_height: int = 200
 @export var cell_size: int = 64
 @export var show_debug: bool = true
 
 var grid: Dictionary[Vector2, CellData] = {}
-var grid_area: int = grid_width * grid_height
+var grid_area: float = grid_width * grid_height
 var noise: Noise
 var rng = RandomNumberGenerator.new()
 
@@ -83,7 +83,8 @@ func initialize_overworld():
 	generateGrid()
 	process_mountain_cells()
 
-## Create and populate 'grid' Dictionary with Vector2 positions and corresponding CellData objects.
+## Create and populate `grid` dictionary with Vector2 positions and corresponding `CellData`, `CellArea`, and 
+## `CellSelectBox` objects. Calculate the floor type and instantiate relevant occupiers
 func generateGrid():
 	var noise_range = calc_noise_range(noise)
 	var sample_noise_min = noise_range[0]
@@ -104,24 +105,25 @@ func generateGrid():
 			# Create a new CellArea to detect collisons for new cell. This is an Area2D node and is added to tree
 			var new_cell_area: CellArea = cell_area.instantiate()
 			new_cell_area.position = new_cell.center
-			new_cell_area.cell_data = new_cell
+			new_cell_area.cell_data = new_cell # Link references in cell and cell area
+			new_cell.cell_area = new_cell_area # ^
+			new_cell_area.collision_layer = Constants.layer_mapping["no_occupier"] # Default, updated later if required
 			self.add_child(new_cell_area)
 
-			# Go ahead and pop a cell_select_box on this bitch
+			# Create a new CellSelectBox to display a selected CellArea
 			var new_cell_select_box: CellSelectBox = cell_select_box.instantiate()
 			new_cell_area.cell_select_box = new_cell_select_box
 			self.add_child(new_cell_select_box)
 			new_cell_select_box.position = new_cell.world_pos
-			new_cell_area.cell_select_box.sprite.visible = false
 
-			
 			# Set floor tile for this new cell
 			calc_cell_floor_type(noise_point_value, new_cell)
-			
+
 			debug(x,y)
 
-## Calculate what type of floor resource should be assigned to cell, based on grid_height values from NoiseTexture2D noise
-func calc_cell_floor_type(noise_point_value, new_cell) -> void:
+## Calculate what type of floor resource should be assigned to cell, based on grid_height values from NoiseTexture2D noise.
+## Set layer value for CellArea
+func calc_cell_floor_type(noise_point_value: float, new_cell: CellData) -> void:
 	var r_plant = rng.randf_range(0, 1)
 
 	# Cell is a mountain
@@ -133,6 +135,7 @@ func calc_cell_floor_type(noise_point_value, new_cell) -> void:
 		new_cell.mineral_data = mineral_resource # CellData occupier and navigable are set when mineral_data is set
 		mountain_cells.append(new_cell)
 		refreshCellMineral(structure_layer, new_cell.pos)
+		new_cell.cell_area.collision_layer = Constants.layer_mapping["mineral"]
 
 	# Cell is grass
 	elif noise_point_value < mountain_threshold and noise_point_value >  water_threshold:
@@ -145,19 +148,24 @@ func calc_cell_floor_type(noise_point_value, new_cell) -> void:
 			var new_plant: Plant = plant.instantiate()
 			new_cell.plant_data = new_plant
 
-			if new_plant.cname == "oak_tree":
+			if new_plant.is_tree:
 				#trees are fucking annoying cause they take up more than 1 tile, so manually place the root 1 cell up
 				new_plant.position = get_pos_with_jitter(new_cell.world_pos + Vector2(0, (-1 * cell_size)))
 				self.add_child(new_plant)
 				new_plant.z_index = 2 # Move tree infront of other objects 
+				new_cell.cell_area.collision_layer = Constants.layer_mapping["tree"]
 			else:
 				new_plant.position = get_pos_with_jitter(new_cell.world_pos)
 				self.add_child(new_plant)
+				new_cell.cell_area.collision_layer = Constants.layer_mapping["plant"]
 
 	# Cell is water
 	elif noise_point_value <= water_threshold:
 		new_cell.floor_data = floor_resources["water"]
 		refreshCellFloor(terrain_layer, new_cell.pos)
+
+		# Since this cell currently cannot have objects don't set a layer. May need to be added in the future, like 
+		# when you can build water structures
 
 ## Set terrain tile layer floor data. Uses godot built-in tile layer feature 'set_cell'
 func refreshCellFloor(layer: TerrainLayer, _pos: Vector2) -> void: 

@@ -4,3 +4,4 @@ extends Plant
 func set_data() -> void:
 	cname = "oak_tree"
 	inspector_name = "Oak Tree"
+	is_tree = true

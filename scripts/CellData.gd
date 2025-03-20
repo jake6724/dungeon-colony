@@ -4,6 +4,8 @@ extends Object
 signal cellChanged(_pos: Vector2)
 signal navChanged(_pos: Vector2)
 
+var cell_area: CellArea
+
 ## Grid point
 var pos: Vector2
 ## World point
