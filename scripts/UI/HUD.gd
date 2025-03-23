@@ -18,13 +18,17 @@ extends Control
 @onready var item_button: Button = $SelectModeContainer/ItemButton
 @onready var unit_button: Button = $SelectModeContainer/UnitButton
 
-
 # Signals
 signal select_mode_changed
+signal mouse_entered_hud
+signal mouse_exited_hud
 
 func _ready():
 	# Connect to PlayerController signals
 	pc.cell_area_selection_changed.connect(update_inspector_label)
+
+	select_mode_container.mouse_entered.connect(on_mouse_entered_hud)
+	select_mode_container.mouse_exited.connect(on_mouse_exited_hud)
 
 	# Connect to select mode signals
 	chop_wood_button.focus_entered.connect(on_select_mode_button_focus_entered.bind("tree"))
@@ -33,6 +37,21 @@ func _ready():
 	structure_button.focus_entered.connect(on_select_mode_button_focus_entered.bind("structure"))
 	item_button.focus_entered.connect(on_select_mode_button_focus_entered.bind("item"))
 	unit_button.focus_entered.connect(on_select_mode_button_focus_entered.bind("unit"))
+
+	# Connect to mouse_entered signals
+	# TODO: This sucks
+	chop_wood_button.mouse_entered.connect(on_mouse_entered_hud)
+	chop_wood_button.mouse_exited.connect(on_mouse_exited_hud)
+	mine_button.mouse_entered.connect(on_mouse_entered_hud)
+	mine_button.mouse_exited.connect(on_mouse_exited_hud)
+	harvest_button.mouse_entered.connect(on_mouse_entered_hud)
+	harvest_button.mouse_exited.connect(on_mouse_exited_hud)
+	structure_button.mouse_entered.connect(on_mouse_entered_hud)
+	structure_button.mouse_exited.connect(on_mouse_exited_hud)
+	item_button.mouse_entered.connect(on_mouse_entered_hud)
+	item_button.mouse_exited.connect(on_mouse_exited_hud)
+	unit_button.mouse_entered.connect(on_mouse_entered_hud)
+	unit_button.mouse_exited.connect(on_mouse_exited_hud)
 
 
 func on_select_mode_button_focus_entered(new_select_mode: String):
@@ -51,3 +70,9 @@ func update_inspector_label() -> void:
 			set_inspector_name_label_text("Multiple objects selected")
 	else:
 		set_inspector_name_label_text("")
+
+func on_mouse_entered_hud():
+	mouse_entered_hud.emit()
+
+func on_mouse_exited_hud():
+	mouse_exited_hud.emit()

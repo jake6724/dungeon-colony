@@ -2,7 +2,6 @@ extends Node
 # This is autoloaded into the scene
 # Project settings > Globals tab > Autoload
 
-
 # Layers are represented by Binary numbers. Layer 1 = 1, layer 2 = 2, layer 3 = 4, layer 4 = 8.
 # To find a layer number, you will do: layer_number = 2 ^ (n - 1)
 # So layer 13 would be set as 2 ^ (13 - 1) = 4096
@@ -20,5 +19,6 @@ const layer_mapping: Dictionary[String, int] = {
 	"structure": 64,
 	"item": 128,
 	"unit": 256,
+	"unit_item": 512,
 	"all_layer": 4294967295
 }

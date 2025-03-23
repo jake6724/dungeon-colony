@@ -1,6 +1,11 @@
 class_name PlayerController
 extends Node2D
 
+################################################################
+# TODOs
+# 3. Double clicking should only select everything if you clicked a valid object, and then reset what
+#		that object was when you're done
+
 # Scene Node references 
 @onready var main = get_tree().root.get_node("Main")
 @onready var ow: Overworld = main.get_node("Overworld")
@@ -13,7 +18,6 @@ extends Node2D
 @onready var select_panel_area: Area2D = $SelectPanelArea
 @onready var select_panel_collision: CollisionShape2D = $SelectPanelArea/SelectPanelCollision
 @onready var select_panel_collision_shape: Shape2D = select_panel_collision.shape
-@onready var cell_select_box: PackedScene = preload("res://scenes/PlayerController/cell_select_box.tscn")
 
 # Signals 
 signal cell_area_selection_changed
@@ -30,25 +34,24 @@ var is_selected_cell_area_array_homogenous: bool
 var selected_cell_area_array_inspector_name: String
 
 # Select mode data
-var current_select_mode: String
+var current_select_mode: String = "unit_item"
+
+# idk
+var is_input_enabled: bool = true
 
 func _ready():
 	select_panel_area.area_entered.connect(on_select_panel_area_entered)
 	select_panel_area.area_exited.connect(on_select_panel_area_exited)
 	select_panel_collision.disabled = true
 	select_panel_area.collision_layer = Constants.layer_mapping["no_collision"]
-	select_panel_area.collision_mask = Constants.layer_mapping["plant"]
+	select_panel_area.collision_mask = Constants.layer_mapping[current_select_mode]
 
-	# Connect to HUD select mode signal
+	# Connect to HUD select mode signals
 	hud.select_mode_changed.connect(on_select_mode_changed)
+	hud.mouse_entered_hud.connect(on_mouse_entered_hud)
+	hud.mouse_exited_hud.connect(on_mouse_exited_hud)
 
 func _process(_delta):
-	if Input.is_action_just_released("left_click"):
-		reset_select_panel_preserve_selected()
-		update_hud_data()
-		cell_area_selection_changed.emit()
-		return
-
 	if is_selecting:
 		# Continuously update the selection rectangle to match the mouse position
 		# select_panel and select_panel_area are set to match this rectangle, it does not interact with cells
@@ -65,76 +68,83 @@ func _process(_delta):
 			select_panel_collision.shape.size = selection_rect.size
 
 func _input(event):
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		# Handle double clicking
+	if is_input_enabled:
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+			if Input.is_action_just_released("left_click"):
+				reset_select_panel_preserve_selected()
+				update_hud_data()
+				cell_area_selection_changed.emit()
+				return
 
-		# TODO: Double clicking shouldn't care about select mode; instead it should just select
-		# every cell_area that has the same occupier cname(?) as the object that was just double clicked
-		if event.double_click:
-			select_panel.visible = false
-			select_panel_collision.disabled = false
+			# Handle double clicking
+			# TODO: Double clicking shouldn't care about select mode; instead it should just select
+			# every cell_area that has the same occupier cname(?) as the object that was just double clicked
+			if event.double_click:
+				select_panel.visible = false
+				select_panel_collision.disabled = false
 
-			var new_size = Vector2((get_viewport().size)) / camera.zoom
-			var new_position = camera.position - (new_size / 2)
+				var new_size = Vector2((get_viewport().size)) / camera.zoom
+				var new_position = camera.position - (new_size / 2)
 
-			select_panel.size = new_size
-			select_panel.position = new_position
+				select_panel.size = new_size
+				select_panel.position = new_position
 
-			select_panel_collision.shape.size = new_size
-			select_panel_collision.position = new_position + (new_size / 2)
-			return # Do not continue to process input
+				select_panel_collision.shape.size = new_size
+				select_panel_collision.position = new_position + (new_size / 2)
+				return # Do not continue to process input
+			
+			if event.pressed:
+				# Only reset previously selected data if shift is not held during current click
+				if not(Input.is_action_pressed("shift")):
+					release_selected()
+
+				# Handle individual cell selection
+				# TODO: This needs to take into account the select mode
+				selection_start = get_global_mouse_position()
+				var selection_start_grid_pos = ow.worldToGrid(selection_start)
+				if ow.grid.has(selection_start_grid_pos):
+					# Get a reference to the CellArea, through the CellData. Do not store CellData (linked in CellArea)
+					var selected_cell_area: CellArea = ow.grid[ow.worldToGrid(selection_start)].cell_area
+					if selected_cell_area.collision_layer == Constants.layer_mapping[current_select_mode]:
+						if selected_cell_area is CellArea:
+							# This and the elif below have a similar relationship and function to on_area_entered/exited
+							if not selected_cell_area.is_selected:
+								# TODO: This needs to support unit selection as well
+								if selected_cell_area.cell_data.occupier: # Only select cells with occupiers
+									selected_cell_area.is_selected = true
+									selected_cell_area_array.append(selected_cell_area)
+									selected_cell_area.cell_select_box.sprite.visible = true
+									update_hud_data()
+									cell_area_selection_changed.emit()
+									
+
+							# If a cell is already selected and shift clicked, deselect it
+							elif selected_cell_area.is_selected and Input.is_action_pressed("shift"):
+								release_specific_cell_area(selected_cell_area)
+								update_hud_data()
+								cell_area_selection_changed.emit()
+								# Don't continue and turn on select panel, it will just readd the cell that was just released
+								return
+
+				# Handle select panel selection. This allows _process to start tracking the mouse
+				is_selecting = true
+				select_panel_collision.disabled = false
+				select_panel.position = selection_start
+				select_panel.size = Vector2()
+				select_panel.visible = true # This may have been hidden by double click
+				select_panel_collision.position = selection_start
+				select_panel_collision.shape.size = Vector2()
 		
-		if event.pressed:
-			# Only reset previously selected data if shift is not held during current click
-			if not(Input.is_action_pressed("shift")):
-				release_selected()
-
-			# Handle individual cell selection
-			# TODO: Does this need to take into account the select mode ? 
-			selection_start = get_global_mouse_position()
-			var selection_start_grid_pos = ow.worldToGrid(selection_start)
-			if ow.grid.has(selection_start_grid_pos):
-				# Get a reference to the CellArea, through the CellData. Do not store CellData (linked in CellArea)
-				var selected_cell_area: CellArea = ow.grid[ow.worldToGrid(selection_start)].cell_area
-				if selected_cell_area is CellArea:
-					# This and the elif below have a similar relationship and function to on_area_entered/exited
-					if not selected_cell_area.is_selected:
-						# TODO: This needs to support unit selection as well
-						if selected_cell_area.cell_data.occupier: # Only select cells with occupiers
-							selected_cell_area.is_selected = true
-							selected_cell_area_array.append(selected_cell_area)
-							selected_cell_area.cell_select_box.sprite.visible = true
-							update_hud_data()
-							cell_area_selection_changed.emit()
-							
-
-					# If a cell is already selected and shift clicked, deselect it
-					elif selected_cell_area.is_selected and Input.is_action_pressed("shift"):
-						release_specific_cell_area(selected_cell_area)
-						update_hud_data()
-						cell_area_selection_changed.emit()
-						# Don't continue and turn on select panel, it will just readd the cell that was just released
-						return
-
-			# Handle select panel selection. This allows _process to start tracking the mouse
-			is_selecting = true
-			select_panel_collision.disabled = false
-			select_panel.position = selection_start
-			select_panel.size = Vector2()
-			select_panel.visible = true # This may have been hidden by double click
-			select_panel_collision.position = selection_start
-			select_panel_collision.shape.size = Vector2()
-	
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
-		if event.pressed:
-			reset_select_panel_release_selected()
-			update_hud_data()
-			cell_area_selection_changed.emit()
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
+			if event.pressed:
+				reset_select_panel_release_selected()
+				update_hud_data()
+				cell_area_selection_changed.emit()
 
 func on_select_mode_changed(new_select_mode: String) -> void:
 	current_select_mode = new_select_mode
-	# Set select_panel_area collision mask based on select mode 
 	select_panel_area.collision_mask = Constants.layer_mapping[current_select_mode]
+	reset_select_panel_release_selected()
 
 func on_select_panel_area_entered(entering_cell_area):
 	if entering_cell_area is CellArea:
@@ -198,6 +208,13 @@ func update_hud_data() -> void:
 			selected_cell_area_array_inspector_name = selected_cell_area_array[0].cell_data.occupier.inspector_name
 		else:
 			selected_cell_area_array_inspector_name = ""
+
+func on_mouse_entered_hud() -> void:
+	if not is_selecting:
+		is_input_enabled = false
+
+func on_mouse_exited_hud() -> void:
+	is_input_enabled = true
 
 ## Check that the occupier objects of all CellData objects in the array have the same 'cname' value. 
 ## Returns false if `array` is empty

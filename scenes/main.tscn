@@ -1961,6 +1961,12 @@ metadata/_better_terrain = {
 [node name="Main" type="Node2D"]
 script = ExtResource("1_t1omg")
 
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="UI" type="Node" parent="CanvasLayer"]
+
+[node name="HUD" parent="CanvasLayer/UI" instance=ExtResource("15_jkv2x")]
+
 [node name="Camera2D" type="Camera2D" parent="."]
 script = ExtResource("6_l54ba")
 
@@ -1984,12 +1990,6 @@ script = ExtResource("8_85g3d")
 
 [node name="PathFinding" type="Node" parent="Overworld"]
 script = ExtResource("4_g680v")
-
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
-
-[node name="UI" type="Node" parent="CanvasLayer"]
-
-[node name="HUD" parent="CanvasLayer/UI" instance=ExtResource("15_jkv2x")]
 
 [node name="PlayerController" parent="." instance=ExtResource("15_jbj1t")]
 z_index = 1000

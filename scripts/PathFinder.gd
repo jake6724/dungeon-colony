@@ -1,6 +1,8 @@
 class_name PathFinder
 extends Node
 
+# Make untis move through the center of the point not top right ? 
+
 var a_star = AStar2D.new()
 @onready var main = get_tree().root.get_node("Main")
 @onready var ow = main.get_node("Overworld")
