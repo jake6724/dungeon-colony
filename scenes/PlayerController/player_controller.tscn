@@ -1,6 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://bv2ipnhto24re"]
+[gd_scene load_steps=9 format=3 uid="uid://bv2ipnhto24re"]
 
 [ext_resource type="Script" uid="uid://cxnccd8rabpvm" path="res://scripts/PlayerController/PlayerController.gd" id="1_y1ejb"]
+[ext_resource type="Script" uid="uid://b6boe6jcfh64y" path="res://scripts/PlayerController/UnitCombatSelect.gd" id="2_3ffxc"]
+[ext_resource type="Script" uid="uid://71b28j0yymsk" path="res://scripts/PlayerController/CellSelect.gd" id="3_vl76j"]
+[ext_resource type="PackedScene" uid="uid://ccjqqu5bf3obw" path="res://scenes/PlayerController/unit_combat_gui.tscn" id="4_vl76j"]
+[ext_resource type="PackedScene" uid="uid://dtostwk2alf32" path="res://scenes/cell_select_gui.tscn" id="5_3n42f"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_y1ejb"]
 
@@ -11,6 +15,9 @@ border_width_top = 7
 border_width_right = 7
 border_width_bottom = 7
 border_color = Color(0.828052, 0.840857, 0.839238, 0.796078)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_y1ejb"]
+radius = 13.0
 
 [node name="PlayerController" type="Node2D"]
 script = ExtResource("1_y1ejb")
@@ -26,3 +33,23 @@ shape = SubResource("RectangleShape2D_y1ejb")
 offset_right = 40.0
 offset_bottom = 40.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_y1ejb")
+
+[node name="TargetArea" type="Area2D" parent="."]
+
+[node name="TargetCollision" type="CollisionShape2D" parent="TargetArea"]
+shape = SubResource("CircleShape2D_y1ejb")
+
+[node name="SelectModes" type="Node" parent="."]
+
+[node name="UnitCombatSelect" type="Node2D" parent="SelectModes"]
+script = ExtResource("2_3ffxc")
+
+[node name="CellSelect" type="Node2D" parent="SelectModes"]
+script = ExtResource("3_vl76j")
+metadata/_custom_type_script = "uid://71b28j0yymsk"
+
+[node name="GUI" type="CanvasLayer" parent="."]
+
+[node name="UnitCombatGUI" parent="GUI" instance=ExtResource("4_vl76j")]
+
+[node name="CellSelectGUI" parent="GUI" instance=ExtResource("5_3n42f")]

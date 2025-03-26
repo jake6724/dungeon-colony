@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="AbilityData" load_steps=2 format=3 uid="uid://dbsx15084fof4"]
+
+[ext_resource type="Script" uid="uid://k28nbfod27ei" path="res://scripts/Combat/AbilityData.gd" id="1_ap7ts"]
+
+[resource]
+script = ExtResource("1_ap7ts")
+name = "stormball"
+display_name = "Stormball"
+desc = ""
+cooldown = 0.0
+is_weapon_ability = false
+is_character_ability = false
+cast_type = 0
+is_magic = false
+cast_time = 0.0
+animation_names = Array[String]([])
+damage = 0.0
+damage_duration = 0.0
+damage_interval = 0.0
+damage_type = 0
+buff_duration = 0.0
+buff_interval = 0.0
+healing = 0.0
+healing_duration = 0.0
+healing_interval = 0.0
+stun_duration = 0.0
+slow_strength = 0.0
+slow_duration = 0.0
+root_duration = 0.0
+knockback_strength = 0.0
+metadata/_custom_type_script = "uid://k28nbfod27ei"

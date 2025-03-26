@@ -1,0 +1,76 @@
+[gd_scene load_steps=2 format=3 uid="uid://ccjqqu5bf3obw"]
+
+[ext_resource type="Script" uid="uid://duv77ku3navkw" path="res://scripts/GUI/UnitCombatGUI.gd" id="1_4egec"]
+
+[node name="UnitCombatGUI" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
+script = ExtResource("1_4egec")
+
+[node name="UnitAbilities" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -345.0
+offset_top = -150.0
+offset_right = 345.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 30
+
+[node name="Ability1Button" type="Button" parent="UnitAbilities"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UnitAbilities/Ability1Button"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 0
+offset_right = 50.0
+offset_bottom = 50.0
+text = "Q"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Ability2Button" type="Button" parent="UnitAbilities"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UnitAbilities/Ability2Button"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 0
+offset_right = 50.0
+offset_bottom = 50.0
+text = "W"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Ability3Button" type="Button" parent="UnitAbilities"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UnitAbilities/Ability3Button"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 0
+offset_right = 50.0
+offset_bottom = 50.0
+text = "E"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Ability4Button" type="Button" parent="UnitAbilities"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UnitAbilities/Ability4Button"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 0
+offset_right = 50.0
+offset_bottom = 50.0
+text = "R"
+horizontal_alignment = 1
+vertical_alignment = 1

@@ -1,12 +1,26 @@
-[gd_scene load_steps=3 format=3 uid="uid://c8fdimyxdbjdl"]
+[gd_scene load_steps=5 format=3 uid="uid://c8fdimyxdbjdl"]
 
 [ext_resource type="Script" uid="uid://hxthya53ethx" path="res://scripts/PlantData/OakTree.gd" id="1_7e8fl"]
 [ext_resource type="Texture2D" uid="uid://dpdnghncb3lp1" path="res://art/plants/oak_tree.png" id="2_xk7ml"]
+[ext_resource type="Texture2D" uid="uid://b12fdxp5aru4u" path="res://art/plants/oak_tree_top.png" id="3_sfxsv"]
+[ext_resource type="Texture2D" uid="uid://bgjighdcco5br" path="res://art/plants/oak_tree_bottom.png" id="4_38gsn"]
 
 [node name="OakTree" type="Node2D"]
 script = ExtResource("1_7e8fl")
 metadata/_custom_type_script = "uid://hxthya53ethx"
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+visible = false
 texture = ExtResource("2_xk7ml")
+centered = false
+
+[node name="TopSprite" type="Sprite2D" parent="."]
+texture_filter = 1
+texture = ExtResource("3_sfxsv")
+centered = false
+offset = Vector2(0, -64)
+
+[node name="BottomSprite" type="Sprite2D" parent="."]
+texture_filter = 1
+texture = ExtResource("4_38gsn")
 centered = false

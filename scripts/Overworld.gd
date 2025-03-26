@@ -7,8 +7,8 @@ extends Node2D
 @onready var structure_layer: TileMapLayer = get_node("StructureLayer")
 
 @export var noise_texture: NoiseTexture2D
-@export var grid_width: int = 100
-@export var grid_height: int = 100
+@export var grid_width: int = 25
+@export var grid_height: int = 25
 @export var cell_size: int = 64
 @export var show_debug: bool = true
 
@@ -33,13 +33,14 @@ var mineral_resources: Dictionary[String, Resource] = {
 	"gold": preload("res://data/mineral/gold.tres")}
 
 var mineral_spawn_chances: Array = [
-[mineral_resources["stone"], 98.5],
-[mineral_resources["iron"],1.125], 
-[mineral_resources["copper"], 0.125],
-[mineral_resources["titanium"], 0.125], 
-[mineral_resources["gold"], 0.125]]
+	[mineral_resources["stone"], 98.5],
+	[mineral_resources["iron"],1.125], 
+	[mineral_resources["copper"], 0.125],
+	[mineral_resources["titanium"], 0.125], 
+	[mineral_resources["gold"], 0.125]
+]
 
-var plant_threshold: float = .10 # Chance that any type of plant will spawn on a grass tile. Higher value, more plants overall
+var plant_threshold: float = .1 # Chance that any type of plant will spawn on a grass tile. Higher value, more plants overall
 var plant_resources: Dictionary[String, Resource] = {
 	"oak_tree": preload("res://scenes/plants/oak_tree.tscn"),
 	"wheat": preload("res://scenes/plants/wheat.tscn"),
@@ -61,8 +62,8 @@ var water_threshold: float
 
 # Distance from min and max of noise map to spawn floor type. 
 # Higher values; more of that floor type
-var mountain_offset: float = .1
-var water_offset: float = .025
+var mountain_offset: float = -.5
+var water_offset: float = -.5
 
 # Used for specific reiteration after initial grid generation on certain tile types
 var grass_cells: Array[Vector2] = []
@@ -150,9 +151,9 @@ func calc_cell_floor_type(noise_point_value: float, new_cell: CellData) -> void:
 
 			if new_plant.is_tree:
 				#trees are fucking annoying cause they take up more than 1 tile, so manually place the root 1 cell up
-				new_plant.position = get_pos_with_jitter(new_cell.world_pos + Vector2(0, (-1 * cell_size)))
+				# new_plant.position = get_pos_with_jitter(new_cell.world_pos + Vector2(0, (-1 * cell_size)))
+				new_plant.position = get_pos_with_jitter(new_cell.world_pos)
 				self.add_child(new_plant)
-				new_plant.z_index = 2 # Move tree infront of other objects 
 				new_cell.cell_area.collision_layer = Constants.layer_mapping["tree"]
 			else:
 				new_plant.position = get_pos_with_jitter(new_cell.world_pos)
@@ -273,6 +274,9 @@ func debug(x:int, y:int):
 		rect.size = Vector2(cell_size, cell_size)
 		rect.editor_only = false
 		add_child(rect)
+
+		label.z_index = Constants.z_index_mapping["debug"]
+		rect.z_index = Constants.z_index_mapping["debug"]
 
 ## Return world position of grid coordinate.
 func gridToWorld(_pos: Vector2) -> Vector2:

@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://bx3n4rbfm5xsp"]
+
+[ext_resource type="Texture2D" uid="uid://d2tuxvlodqejy" path="res://art/units/path_target.png" id="1_f2qlv"]
+
+[node name="PathTargetSprite" type="Sprite2D"]
+texture = ExtResource("1_f2qlv")
+centered = false

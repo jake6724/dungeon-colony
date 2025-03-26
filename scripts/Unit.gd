@@ -5,17 +5,20 @@ extends Area2D
 @onready var ow: Overworld = main.get_node("Overworld")
 @onready var pf: PathFinder = ow.get_node("PathFinding")
 
+
 var data: UnitData = UnitData.new()
+var is_selected: bool = false
+var preserve: bool = false
+var target_line: Line2D
+var max_range: Vector2 = Vector2(100, 100)
 
 var path: PackedVector2Array = []
-var pos: Vector2 :
-	get:
-		return pos
-	set(value):
-		pos = value
+var pos: Vector2 
+var center: Vector2
 
 func _ready():
 	pos = ow.worldToGrid(position)
+	collision_layer = Constants.layer_mapping["unit"]
 
 func _process(delta):
 	move(delta)
@@ -32,13 +35,3 @@ func move(delta):
 			pos = ow.worldToGrid(position)
 			position += (path[0] - position).normalized() * data.speed * delta  
 
-# func _input(event):
-# 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-# 		if event.pressed:
-# 			var clicked = ow.worldToGrid(get_global_mouse_position())
-
-# 			if ow.grid.has(ow.worldToGrid(clicked)):
-# 				path = pf.getPath(pos, clicked)
-			
-# 			else: 
-# 				print("Invalid target cell")

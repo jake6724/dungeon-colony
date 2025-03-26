@@ -1,9 +1,10 @@
-class_name HUD
+class_name CellSelectGUI
 extends Control
 
 # Scene node references
 @onready var main = get_tree().root.get_node("Main")
 @onready var pc: PlayerController = main.get_node("PlayerController")
+@onready var cell_select: CellSelect = pc.get_node("SelectModes").get_node("CellSelect")
 
 # Children references
 # Inspector
@@ -20,15 +21,15 @@ extends Control
 
 # Signals
 signal select_mode_changed
-signal mouse_entered_hud
-signal mouse_exited_hud
+signal mouse_entered_cell_select_gui
+signal mouse_exited_cell_select_gui
 
 func _ready():
 	# Connect to PlayerController signals
-	pc.cell_area_selection_changed.connect(update_inspector_label)
+	cell_select.cell_area_selection_changed.connect(update_inspector_label)
 
-	select_mode_container.mouse_entered.connect(on_mouse_entered_hud)
-	select_mode_container.mouse_exited.connect(on_mouse_exited_hud)
+	select_mode_container.mouse_entered.connect(on_mouse_entered_cell_select_gui)
+	select_mode_container.mouse_exited.connect(on_mouse_exited_cell_select_gui)
 
 	# Connect to select mode signals
 	chop_wood_button.focus_entered.connect(on_select_mode_button_focus_entered.bind("tree"))
@@ -40,18 +41,18 @@ func _ready():
 
 	# Connect to mouse_entered signals
 	# TODO: This sucks
-	chop_wood_button.mouse_entered.connect(on_mouse_entered_hud)
-	chop_wood_button.mouse_exited.connect(on_mouse_exited_hud)
-	mine_button.mouse_entered.connect(on_mouse_entered_hud)
-	mine_button.mouse_exited.connect(on_mouse_exited_hud)
-	harvest_button.mouse_entered.connect(on_mouse_entered_hud)
-	harvest_button.mouse_exited.connect(on_mouse_exited_hud)
-	structure_button.mouse_entered.connect(on_mouse_entered_hud)
-	structure_button.mouse_exited.connect(on_mouse_exited_hud)
-	item_button.mouse_entered.connect(on_mouse_entered_hud)
-	item_button.mouse_exited.connect(on_mouse_exited_hud)
-	unit_button.mouse_entered.connect(on_mouse_entered_hud)
-	unit_button.mouse_exited.connect(on_mouse_exited_hud)
+	chop_wood_button.mouse_entered.connect(on_mouse_entered_cell_select_gui)
+	chop_wood_button.mouse_exited.connect(on_mouse_exited_cell_select_gui)
+	mine_button.mouse_entered.connect(on_mouse_entered_cell_select_gui)
+	mine_button.mouse_exited.connect(on_mouse_exited_cell_select_gui)
+	harvest_button.mouse_entered.connect(on_mouse_entered_cell_select_gui)
+	harvest_button.mouse_exited.connect(on_mouse_exited_cell_select_gui)
+	structure_button.mouse_entered.connect(on_mouse_entered_cell_select_gui)
+	structure_button.mouse_exited.connect(on_mouse_exited_cell_select_gui)
+	item_button.mouse_entered.connect(on_mouse_entered_cell_select_gui)
+	item_button.mouse_exited.connect(on_mouse_exited_cell_select_gui)
+	unit_button.mouse_entered.connect(on_mouse_entered_cell_select_gui)
+	unit_button.mouse_exited.connect(on_mouse_exited_cell_select_gui)
 
 
 func on_select_mode_button_focus_entered(new_select_mode: String):
@@ -63,16 +64,16 @@ func set_inspector_name_label_text(new_text) -> void:
 ## Update inspector label based on data from PlayerController. Should only be updated when PC's 
 ## `area_entered` or `area_exited` signals are emitted.
 func update_inspector_label() -> void:
-	if pc.selected_cell_area_array.size() > 0:
-		if pc.is_selected_cell_area_array_homogenous:
-			set_inspector_name_label_text(pc.selected_cell_area_array_inspector_name + " x" + str(pc.selected_cell_area_array.size()))
+	if cell_select.selected_cell_area_array.size() > 0:
+		if cell_select.is_selected_cell_area_array_homogenous:
+			set_inspector_name_label_text(cell_select.selected_cell_area_array_inspector_name + " x" + str(cell_select.selected_cell_area_array.size()))
 		else:
 			set_inspector_name_label_text("Multiple objects selected")
 	else:
 		set_inspector_name_label_text("")
 
-func on_mouse_entered_hud():
-	mouse_entered_hud.emit()
+func on_mouse_entered_cell_select_gui():
+	mouse_entered_cell_select_gui.emit()
 
-func on_mouse_exited_hud():
-	mouse_exited_hud.emit()
+func on_mouse_exited_cell_select_gui():
+	mouse_exited_cell_select_gui.emit()

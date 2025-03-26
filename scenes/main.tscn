@@ -1,8 +1,7 @@
-[gd_scene load_steps=24 format=3 uid="uid://cietwbxcbfm0q"]
+[gd_scene load_steps=25 format=3 uid="uid://cietwbxcbfm0q"]
 
 [ext_resource type="Script" uid="uid://cvohvjt5mlu4n" path="res://scripts/Main.gd" id="1_t1omg"]
 [ext_resource type="TileSet" uid="uid://c2x727eekxfqf" path="res://data/main_tileset.tres" id="2_q6gee"]
-[ext_resource type="PackedScene" uid="uid://c0iosa5yrvqdb" path="res://scenes/Unit.tscn" id="3_73hmm"]
 [ext_resource type="Script" uid="uid://dhuraalayttrr" path="res://scripts/Overworld.gd" id="3_trceg"]
 [ext_resource type="Script" uid="uid://d0gx3aky4farb" path="res://scripts/PathFinder.gd" id="4_g680v"]
 [ext_resource type="Script" uid="uid://chjp2s4r77bvv" path="res://scripts/PlayerCamera.gd" id="6_l54ba"]
@@ -14,7 +13,9 @@
 [ext_resource type="Texture2D" uid="uid://bnadmvclevvfc" path="res://art/minerals/mountain/hidden_titanium_3x3_minimal.png" id="10_muem4"]
 [ext_resource type="Texture2D" uid="uid://cfi5a76tp3t8y" path="res://art/minerals/mountain/hidden_gold_3x3_minimal.png" id="11_dp3eg"]
 [ext_resource type="PackedScene" uid="uid://bv2ipnhto24re" path="res://scenes/PlayerController/player_controller.tscn" id="15_jbj1t"]
-[ext_resource type="PackedScene" uid="uid://dpixvjjfeygfw" path="res://scenes/hud.tscn" id="15_jkv2x"]
+[ext_resource type="PackedScene" uid="uid://cjtlid7yr4new" path="res://scenes/player_unit.tscn" id="16_muem4"]
+[ext_resource type="Resource" uid="uid://dwvjcapqwfyom" path="res://data/ability/character/fireball.tres" id="17_dp3eg"]
+[ext_resource type="Resource" uid="uid://c5x84a7yhn1jd" path="res://data/ability/character/heal.tres" id="18_0ld40"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_trceg"]
 noise_type = 3
@@ -1963,10 +1964,6 @@ script = ExtResource("1_t1omg")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="UI" type="Node" parent="CanvasLayer"]
-
-[node name="HUD" parent="CanvasLayer/UI" instance=ExtResource("15_jkv2x")]
-
 [node name="Camera2D" type="Camera2D" parent="."]
 script = ExtResource("6_l54ba")
 
@@ -1979,10 +1976,6 @@ show_debug = false
 tile_set = ExtResource("2_q6gee")
 script = ExtResource("7_o6xl0")
 
-[node name="Units" type="Node2D" parent="Overworld/TerrainLayer"]
-
-[node name="Unit" parent="Overworld/TerrainLayer/Units" instance=ExtResource("3_73hmm")]
-
 [node name="StructureLayer" type="TileMapLayer" parent="Overworld"]
 z_index = 1
 tile_set = SubResource("TileSet_eb6dy")
@@ -1991,5 +1984,25 @@ script = ExtResource("8_85g3d")
 [node name="PathFinding" type="Node" parent="Overworld"]
 script = ExtResource("4_g680v")
 
+[node name="PlayerUnits" type="Node" parent="."]
+
+[node name="PlayerUnit" parent="PlayerUnits" instance=ExtResource("16_muem4")]
+position = Vector2(1138, 261)
+test_ability_1 = ExtResource("17_dp3eg")
+test_ability_2 = ExtResource("18_0ld40")
+
+[node name="PlayerUnit2" parent="PlayerUnits" instance=ExtResource("16_muem4")]
+position = Vector2(865, 198)
+test_ability_1 = ExtResource("18_0ld40")
+
+[node name="PlayerUnit3" parent="PlayerUnits" instance=ExtResource("16_muem4")]
+position = Vector2(721, 329)
+
+[node name="PlayerUnit4" parent="PlayerUnits" instance=ExtResource("16_muem4")]
+position = Vector2(910, 437)
+test_ability_1 = ExtResource("18_0ld40")
+
+[node name="Line2D" type="Line2D" parent="."]
+default_color = Color(1, 1, 1, 0.803922)
+
 [node name="PlayerController" parent="." instance=ExtResource("15_jbj1t")]
-z_index = 1000

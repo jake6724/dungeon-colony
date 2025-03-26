@@ -1,8 +1,8 @@
 [gd_scene load_steps=2 format=3 uid="uid://dpixvjjfeygfw"]
 
-[ext_resource type="Script" uid="uid://bq0g5biqhurlj" path="res://scripts/UI/HUD.gd" id="1_ahhtf"]
+[ext_resource type="Script" path="res://scripts/UI/HUD.gd" id="1_ahhtf"]
 
-[node name="HUD" type="Control"]
+[node name="CellSelectGUI" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0

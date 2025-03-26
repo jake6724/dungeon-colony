@@ -17,7 +17,7 @@ func initialize():
 func getPath(_point_a: Vector2, _point_b: Vector2) -> PackedVector2Array:
 	var a_id: int = getPointID(_point_a)
 	var b_id: int = getPointID(_point_b)
-	var a_star_path: PackedVector2Array = a_star.get_point_path(a_id, b_id)
+	var a_star_path: PackedVector2Array = a_star.get_point_path(a_id, b_id, true)
 	return a_star_path
 
 ## Configure AStar node with all overworld grid points. AStar stores this as id + Vector2 position and uses points to determine
@@ -38,7 +38,7 @@ func connectPoint(_point: Vector2) -> void:
 	var _point_id = getPointID(_point)
 	# Don't connect a point to its neighbors if it isn't navigable itself
 	# This will save time by not processing mountain tiles
-	if ow.grid[_point].is_navigable:
+	if not(ow.grid[_point].is_navigable):
 		return 
 		
 	for direction in DIRECTIONS:

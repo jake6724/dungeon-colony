@@ -70,3 +70,5 @@ var is_navigable: bool = true :
 		emit_signal("navChanged", pos)
 	get:
 		return is_navigable
+
+var is_reserved: bool = false

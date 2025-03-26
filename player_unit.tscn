@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3 uid="uid://b4h5t301avc03"]
+
+[ext_resource type="Script" uid="uid://bgct827acwtcg" path="res://scripts/Units/PlayerUnit.gd" id="1_1qwtc"]
+[ext_resource type="Texture2D" uid="uid://bafltya7re4a5" path="res://art/units/colonist.png" id="2_uttgd"]
+[ext_resource type="Texture2D" uid="uid://ce8mnl41krf2y" path="res://art/unit_combat/aoe_circle_test.png" id="3_7lp5a"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7lp5a"]
+size = Vector2(128, 128)
+
+[node name="PlayerUnit" type="Node2D"]
+script = ExtResource("1_1qwtc")
+metadata/_custom_type_script = "uid://bgct827acwtcg"
+
+[node name="UnitSprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_uttgd")
+centered = false
+
+[node name="UnitArea" type="Area2D" parent="."]
+
+[node name="UnitCollision" type="CollisionShape2D" parent="UnitArea"]
+position = Vector2(64, 64)
+shape = SubResource("RectangleShape2D_7lp5a")
+
+[node name="SelectedSprite" type="Sprite2D" parent="."]
+visible = false
+texture_filter = 1
+position = Vector2(66.5, 66.5)
+scale = Vector2(3.07813, 3.07813)
+texture = ExtResource("3_7lp5a")

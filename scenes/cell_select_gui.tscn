@@ -1,0 +1,72 @@
+[gd_scene load_steps=2 format=3 uid="uid://dtostwk2alf32"]
+
+[ext_resource type="Script" uid="uid://c4klyxvjp1kva" path="res://scripts/GUI/CellSelectGUI.gd" id="1_qt7kp"]
+
+[node name="CellSelectGUI" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
+script = ExtResource("1_qt7kp")
+metadata/_custom_type_script = "uid://c4klyxvjp1kva"
+
+[node name="Inspector" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 232.0
+offset_bottom = 40.0
+
+[node name="InspectorColorRect" type="ColorRect" parent="Inspector"]
+layout_mode = 0
+offset_right = 232.0
+offset_bottom = 40.0
+color = Color(0.154876, 0.154876, 0.154876, 1)
+
+[node name="InspectorNameLabel" type="Label" parent="Inspector"]
+layout_mode = 0
+offset_right = 231.0
+offset_bottom = 40.0
+
+[node name="SelectModeContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -460.0
+offset_top = -150.0
+offset_right = 460.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="ChopWoodButton" type="Button" parent="SelectModeContainer"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+text = "Chop Wood"
+
+[node name="MineButton" type="Button" parent="SelectModeContainer"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+text = "Mine
+"
+
+[node name="HarvestButton" type="Button" parent="SelectModeContainer"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+text = "Harvest"
+
+[node name="StructureButton" type="Button" parent="SelectModeContainer"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+text = "Structure"
+
+[node name="ItemButton" type="Button" parent="SelectModeContainer"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+text = "Item"
+
+[node name="UnitButton" type="Button" parent="SelectModeContainer"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+text = "Unit"
