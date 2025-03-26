@@ -12,6 +12,9 @@ extends Node2D
 @onready var area = get_node("UnitArea")
 @onready var collision = area.get_node("UnitCollision")
 
+var grid_position: Vector2 = Vector2()
+var center: Vector2
+
 # TODO tidy up all these
 var data: UnitData = UnitData.new()
 var is_selected: bool = false
@@ -24,9 +27,10 @@ var path_line: Line2D # TODO Make this line a resource
 var path_target_panel: Panel
 var is_moving: bool = false
 
+var target: EnemyUnit
 
-var grid_position: Vector2 = Vector2()
-var center: Vector2
+var auto_attack_timer: Timer
+
 
 # ABILITY TESTING - NOT PERMANENT SET UP
 var abilities_array: Array[AbilityData] = []
@@ -39,6 +43,25 @@ var ability_iceball = load("res://data/ability/character/ice_ball.tres")
 var ability_stormball = load("res://data/ability/character/storm_ball.tres")
 var ability_heal = load("res://data/ability/character/heal.tres")
 
+# WEAPON TESTING - NOT PERMANENT SET UP
+var weapon: WeaponData = null # TODO: Needs a default of unarmed
+var active_weapon_level: float
+var test_long_sword: WeaponData = load("res://data/weapon/test_long_sword.tres")
+
+# ARMOR TESTING 
+var armor_head: ArmorData = null # TODO: These need a default of naked
+var armor_chest: ArmorData = null
+var armor_legs: ArmorData = null
+# TODO: All weapon, armor, ability resources should go under constants or a similar file
+var test_chestplate: ArmorData = load("res://data/armor/test_chestplate.tres")
+var test_no_helmet: ArmorData = load("res://data/armor/test_no_helmet.tres")
+var test_no_greaves: ArmorData = load("res://data/armor/test_no_greaves.tres")
+
+var attack_damage: float
+var attack_speed: float
+
+var can_attack: bool = true
+
 func _ready():
 	grid_position = ow.worldToGrid(position)
 	# center = grid_position + Vector2(32,32)
@@ -48,7 +71,8 @@ func _ready():
 	data.generate_new_unit_data()
 	# data.print_unit_data()
 
-	# Path Visualization
+	# Path Visualization 
+	# TODO: Make lines center!
 	path_line = Line2D.new()
 	path_line.default_color = (Color(1.0, 1.0, 1.0, 0.500))
 	path_line.width = 10
@@ -71,13 +95,30 @@ func _ready():
 		abilities_array.append(test_ability_3)
 	if test_ability_4:
 		abilities_array.append(test_ability_4)
-	# abilities_array.append(ability_fireball)
-	# abilities_array.append(ability_iceball)
-	# abilities_array.append(ability_stormball)
-	# abilities_array.append(ability_heal)
+
+	# WEAPON TESTING - NOT PERMANENT SET UP
+	if test_long_sword:
+		weapon = test_long_sword
+	active_weapon_level = get_active_weapon_level()
+
+	# ARMOR TESTING
+	if test_no_helmet:
+		armor_head = test_no_helmet
+	if test_chestplate:
+		armor_chest = test_chestplate
+	if test_no_greaves:
+		armor_legs = test_no_greaves
+	set_attack_damage()
+	set_attack_speed()
+
+	auto_attack_timer = Timer.new()
+	auto_attack_timer.process_callback = Timer.TIMER_PROCESS_PHYSICS # Make timer run on physics_process
+	auto_attack_timer.timeout.connect(on_auto_attack_timer_timeout)
+	add_child(auto_attack_timer) # Add as a child of PlayerUnit
 
 func _process(delta):
-	move(delta) 
+	move(delta)
+	auto_attack()
 
 func move(delta):
 	# Check if there are more points in the path to traverse
@@ -132,3 +173,60 @@ func find_valid_target_point_helper():
 		pass
 
 	pass
+
+func auto_attack():
+	if can_attack:
+		# Put the attack function, or call to enemy or whatever here
+		print(name, " attacked!")
+		
+		# Start attack timer based on attack speed
+		auto_attack_timer.start(attack_speed)
+		can_attack = false
+	else:
+		pass
+
+func on_auto_attack_timer_timeout(): 
+	can_attack = true
+
+## Calculate the attack damage for the PlayerUnit. This only sets the internal variable, no return
+func set_attack_damage() -> void:
+	# TODO: All units should have a default armor and weapon; naked and unarmed
+	# d = Weapon damage + Σ of Armor Damage + (weapon level * const weapon_level_modifier)
+	attack_damage = (weapon.damage + (armor_head.damage_buff + armor_chest.damage_buff + armor_legs.damage_buff) + 
+	(active_weapon_level * Constants.weapon_level_modifier))
+
+## Calculate the attack speed for the PlayerUnit. This only sets the internal variable, no return
+func set_attack_speed() -> void:
+	var total_armor_modifier = 1 + (armor_head.attack_speed_modifer + armor_chest.attack_speed_modifer + armor_legs.attack_speed_modifer)
+	attack_speed = weapon.attack_speed / (1 + (active_weapon_level / 100)) * total_armor_modifier
+
+	# print("Weapon level calculation: ", (1 + (active_weapon_level / 100)))
+	# print("Base weapon Attack Speed: ", weapon.attack_speed)
+	# print("Attack speed: ", attack_speed)
+
+func get_active_weapon_level():
+	match weapon.type:
+		Constants.WeaponType.SHORT_SWORD:
+			return data.short_sword_level
+		Constants.WeaponType.LONG_SWORD:
+			return data.long_sword_level
+		Constants.WeaponType.SHIELD:
+			return data.shield_level
+		Constants.WeaponType.BOW:
+			return data.bow_level
+		Constants.WeaponType.MACE:
+			return data.mace_level
+		Constants.WeaponType.HAMMER:
+			return data.hammer_level
+		Constants.WeaponType.SPEAR:
+			return data.spear_level
+		Constants.WeaponType.BATTLE_AXE:
+			return data.battle_axe_level
+		Constants.WeaponType.FLAME_STAFF:
+			return data.fire_magic_level
+		Constants.WeaponType.ICE_STAFF:
+			return data.ice_magic_level
+		Constants.WeaponType.STORM_STAFF:
+			return data.storm_magic_level
+		Constants.WeaponType.SUPPORT_STAFF:
+			return data.support_magic_level

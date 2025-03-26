@@ -158,6 +158,20 @@ func generate_new_unit_data() -> void:
 
 		temp_is_magic_enabled = true if (Constants.rng.randf() < is_magic_enabled_chance) else false
 
+
+func get_new_job_level() -> float:
+	return clamp(Constants.get_weighted_random(base_job_level_chances) + (Constants.rng.randi_range(-5,5)), 0, 100) 
+
+func get_new_weapon_level() -> float: 
+	return clamp(Constants.get_weighted_random(base_weapon_level_chances) + (Constants.rng.randi_range(-5,5)), 0, 100) 
+
+## Return a string which corresponds to a type of magic, defined in `magic_type_chances`
+func get_magic_type() -> String:
+	return Constants.get_weighted_random(magic_type_chances)
+
+func get_magic_level() -> float: 
+	return clamp(Constants.get_weighted_random(base_magic_level_chances) + (Constants.rng.randi_range(-5,5)), 0, 100) 
+
 ## Just for console
 func print_unit_data() -> void:
 	print("\nJOB LEVELS")
@@ -228,16 +242,3 @@ func reset_all_data() -> void:
 	hammer_level = 0
 	spear_level = 0
 	battle_axe_level = 0
-
-func get_new_job_level() -> float:
-	return clamp(Constants.get_weighted_random(base_job_level_chances) + (Constants.rng.randi_range(-5,5)), 0, 100) 
-
-func get_new_weapon_level() -> float: 
-	return clamp(Constants.get_weighted_random(base_weapon_level_chances) + (Constants.rng.randi_range(-5,5)), 0, 100) 
-
-## Return a string which corresponds to a type of magic, defined in `magic_type_chances`
-func get_magic_type() -> String:
-	return Constants.get_weighted_random(magic_type_chances)
-
-func get_magic_level() -> float: 
-	return clamp(Constants.get_weighted_random(base_magic_level_chances) + (Constants.rng.randi_range(-5,5)), 0, 100) 

@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://sxahn5ivxrf8"]
+
+[ext_resource type="Script" uid="uid://kbpkpbw57vyf" path="res://scripts/Units/EnemyUnit.gd" id="1_41xa3"]
+[ext_resource type="Texture2D" uid="uid://b5og381kfkt0d" path="res://art/units/enemy_unit.png" id="2_bshlu"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bshlu"]
+size = Vector2(64, 128)
+
+[node name="EnemyUnit" type="Node2D"]
+script = ExtResource("1_41xa3")
+metadata/_custom_type_script = "uid://kbpkpbw57vyf"
+
+[node name="UnitSprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_bshlu")
+centered = false
+offset = Vector2(0, -64)
+
+[node name="UnitArea" type="Area2D" parent="."]
+
+[node name="UnitCollision" type="CollisionShape2D" parent="UnitArea"]
+position = Vector2(32, 0)
+shape = SubResource("RectangleShape2D_bshlu")

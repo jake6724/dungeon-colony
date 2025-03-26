@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ArmorData" load_steps=2 format=3 uid="uid://c0nmelyhf8a38"]
+
+[ext_resource type="Script" uid="uid://5dq4mb3hvo70" path="res://scripts/Combat/ArmorData.gd" id="1_666qq"]
+
+[resource]
+script = ExtResource("1_666qq")
+name = "test_no_helmet"
+display_name = "No Helmet"
+type = 1
+damage_buff = 0.0
+magic_buff = 0.0
+defense = 0.0
+movement_speed_modifier = 0.0
+attack_speed_modifer = -0.1
+hitpoints = 0.0
+metadata/_custom_type_script = "uid://5dq4mb3hvo70"

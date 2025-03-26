@@ -1,9 +1,10 @@
 class_name WeaponData
-extends Object
+extends Resource
 
-var name: String = ""
-var type: int # Set from an enum 
-var base_damage: float = 0.0
-var damage_type: int # enum ? 
-var attack_speed: float
-var move_speed: float
+@export var name: String = ""
+@export var display_name: String = ""
+@export var type: Constants.WeaponType = Constants.WeaponType.NONE
+@export var damage_type: Constants.WeaponDamageType = Constants.WeaponDamageType.NONE 
+@export var damage: float = 0.0
+@export var attack_speed: float = 1.0 # The base speed, in seconds. Reduced by weapon level, and modified by armor (plus or minus)
+@export var move_speed_modifier: float = 1.0

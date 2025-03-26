@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3 uid="uid://cietwbxcbfm0q"]
+[gd_scene load_steps=26 format=3 uid="uid://cietwbxcbfm0q"]
 
 [ext_resource type="Script" uid="uid://cvohvjt5mlu4n" path="res://scripts/Main.gd" id="1_t1omg"]
 [ext_resource type="TileSet" uid="uid://c2x727eekxfqf" path="res://data/main_tileset.tres" id="2_q6gee"]
@@ -15,6 +15,7 @@
 [ext_resource type="PackedScene" uid="uid://bv2ipnhto24re" path="res://scenes/PlayerController/player_controller.tscn" id="15_jbj1t"]
 [ext_resource type="PackedScene" uid="uid://cjtlid7yr4new" path="res://scenes/player_unit.tscn" id="16_muem4"]
 [ext_resource type="Resource" uid="uid://dwvjcapqwfyom" path="res://data/ability/character/fireball.tres" id="17_dp3eg"]
+[ext_resource type="PackedScene" uid="uid://sxahn5ivxrf8" path="res://scenes/enemy_unit.tscn" id="17_muem4"]
 [ext_resource type="Resource" uid="uid://c5x84a7yhn1jd" path="res://data/ability/character/heal.tres" id="18_0ld40"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_trceg"]
@@ -2006,3 +2007,8 @@ test_ability_1 = ExtResource("18_0ld40")
 default_color = Color(1, 1, 1, 0.803922)
 
 [node name="PlayerController" parent="." instance=ExtResource("15_jbj1t")]
+
+[node name="EnemyUnits" type="Node" parent="."]
+
+[node name="EnemyUnit" parent="EnemyUnits" instance=ExtResource("17_muem4")]
+position = Vector2(418, 326)

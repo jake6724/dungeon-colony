@@ -30,16 +30,19 @@ var active_ability: AbilityData = null
 signal unit_combat_selection_changed
 
 func _ready():
-	print("Test")
 	connect_to_gui_signals()
+	target_area.area_entered.connect(on_target_area_entered)
+	target_area.area_exited.connect(on_target_area_exited)
+	target_area.collision_layer = Constants.layer_mapping["no_collision"]
+	target_area.collision_mask = Constants.layer_mapping["enemy_unit"]
 
-func unit_combat_configure_select_mode():
+## Called everytime PlayerController switches to this select mode
+func configure_select_mode():
 	selected_units_array = []
 	is_targeting = false
 	pc.select_panel_area.collision_mask = Constants.layer_mapping["unit"]
 
 func unit_combat_select_process():
-	#print(selected_units_array)
 	# Unit target select and graphics
 	if is_targeting:
 		var new_current_mouse_position = get_global_mouse_position()
@@ -49,7 +52,6 @@ func unit_combat_select_process():
 
 	if pc.is_selecting:
 		pc.current_mouse_position = get_global_mouse_position()
-		# print(selected_units_array)
 		# Continuously update the selection rectangle to match the mouse position
 		# select_panel and select_panel_area are set to match this rectangle, it does not interact with cells
 		pc.select_rect = Rect2(pc.selection_start, pc.current_mouse_position - pc.selection_start).abs()
@@ -116,7 +118,8 @@ func unit_combat_select_input(event):
 		if Input.is_action_just_pressed("right_click"):
 			if is_targeting: # If targeting, we need to determine if a valid target was clicked
 				if current_target:
-					reset_target_lines_set_selected_target()
+					set_selected_target()
+					reset_target_lines()
 					pc.reset_select_panel()
 				else:
 					set_selected_unit_paths()
@@ -152,13 +155,16 @@ func on_unit_combat_select_panel_area_exited(exiting_area):
 				unit_combat_selection_changed.emit()
 
 func on_target_area_entered(entering_target):
-	if pc.entering_target.owner is EnemyUnit:
-		pc.current_target = pc.entering_target.owner
+	print(entering_target)
+	if entering_target.owner is EnemyUnit:
+		var entering_enemy: EnemyUnit = entering_target.owner
+		print("Found!")
+		current_target = entering_enemy
 
 func on_target_area_exited(exiting_target):
 	if exiting_target.owner is EnemyUnit:
-		if pc.current_target:
-			pc.current_target = null
+		if current_target:
+			current_target = null
 
 func reset_select_panel_preserve_selected_units():
 	preserve_selected_units()
@@ -194,12 +200,11 @@ func release_specific_unit(selected_unit) -> void:
 
 ## This is the final step in targeting, and ends targeting mode. Selected units will set their target, 
 ## and remove targeting lines, and clear `selected_units_array` to start fresh. 
-func reset_target_lines_set_selected_target() -> void:
+func set_selected_target() -> void:
 	is_targeting = false
+	print(current_target)
 	for unit in selected_units_array:
 		unit.target = current_target
-		if unit.target_line:
-			unit.target_line.points = PackedVector2Array([])
 	# Reset target area
 	target_area.position = Vector2()
 	target_collision.disabled = true
@@ -296,9 +301,6 @@ func update_gui_data() -> void:
 	set_common_unit_abilities()
 
 func connect_to_gui_signals():
-	print(unit_combat_gui)
-	print(unit_combat_gui.ability_buttons_array)
 	for button in unit_combat_gui.ability_buttons_array:
-		print(button)
 		button.mouse_entered.connect(pc.on_mouse_entered_gui)
 		button.mouse_exited.connect(pc.on_mouse_exited_gui)

@@ -27,16 +27,17 @@ const layer_mapping: Dictionary[String, int] = {
 	"item": 128,
 	"unit": 256,
 	"unit_item": 512,
+	"enemy_unit": 1024,
 	"all_layer": 4294967295
 }
 
 const z_index_mapping: Dictionary[String, int] = {
 	"floor": 1,
 	"structure": 2,
+	"tree_bottom": 29,
 	"player_unit_select_sprite": 30,
 	"player_unit_sprite": 31,
-	"tree_top": 41,
-	"tree_bottom": 29,
+	"tree_top": 51,
 	"GUI": 999,
 	"debug": 1001
 }
@@ -65,7 +66,14 @@ func grid_to_world(pos: Vector2) -> Vector2:
 func world_to_grid(pos: Vector2) -> Vector2:
 	return floor(pos / cell_size)
 
-# func get_center_point(world_position):
-	
-enum weapon_damage_types {SLASH, PIERCE, BLUNT}
-enum magic_damage_types {FIRE, ICE, STORM}
+# Combat Enums
+enum WeaponDamageType {NONE, SLASH, PIERCE, BLUNT}
+enum MagicDamageType {NONE, FIRE, ICE, STORM}
+
+enum WeaponType {NONE, SHORT_SWORD, LONG_SWORD, SHIELD, BOW, MACE, HAMMER, SPEAR, BATTLE_AXE,
+FLAME_STAFF, ICE_STAFF, STORM_STAFF, SUPPORT_STAFF}
+enum ArmorType {NONE, HELMET, CHESTPLATE, GREAVES}
+
+# Combat constants
+const weapon_level_modifier: float = 1.0 # This modifies how much each weapon skill level adds to final unit damage calculation
+const min_attack_speed: float = 5

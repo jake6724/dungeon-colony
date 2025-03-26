@@ -57,7 +57,7 @@ func _input(event):
 			current_select_mode = select_modes.UNIT_COMBAT_SELECT
 			cell_select_gui.visible = false
 			unit_combat_gui.visible = true
-			unit_combat_select.unit_combat_configure_select_mode()
+			unit_combat_select.configure_select_mode()
 			on_switch_selected_mode()
 
 		# Switch to Cell Select
@@ -65,6 +65,7 @@ func _input(event):
 			current_select_mode = select_modes.CELL_SELECT
 			cell_select_gui.visible = true
 			unit_combat_gui.visible = false
+			# TODO: Add a configure_select_mode() for cell_select
 			on_switch_selected_mode()
 		return
 
