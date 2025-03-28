@@ -92,6 +92,16 @@ func on_select_panel_area_exited(exiting_cell_area):
 		select_modes.UNIT_COMBAT_SELECT:
 			unit_combat_select.on_unit_combat_select_panel_area_exited(exiting_cell_area)
 
+func initialize_select_panel() -> void:
+	is_selecting = true
+	selection_start = get_global_mouse_position()
+	select_panel_collision.disabled = false
+	select_panel.position = selection_start
+	select_panel.size = Vector2()
+	select_panel.visible = true # Incase this was previously hidden by double click
+	select_panel_collision.position = selection_start
+	select_panel_collision.shape.size = Vector2()
+
 func reset_select_panel():
 	is_selecting = false
 	select_panel.size = Vector2()

@@ -1,6 +1,10 @@
 class_name UnitCombatSelect
 extends Node2D
 
+#TODO: Functions like on_unit_combat_select_panel_area_entered should just have generic names across all select modes
+	# This way we can just have a reference to the active select mode and call functions from PC. All ffunctions names
+	# Will need to be generic and standardized between slect modes however for this to work
+
 # Node References
 @onready var main = get_tree().root.get_node("Main")
 @onready var pc: PlayerController = main.get_node("PlayerController")
@@ -69,11 +73,6 @@ func unit_combat_select_input(event):
 	if Input.is_action_just_pressed("tab"):
 		tab_select_next_unit()
 
-	if Input.is_action_just_pressed("shift"):
-		# stop targeting, go back to selection
-		is_targeting = false
-		reset_target_lines() # this will reset is_targeting as well
-
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if pc.is_input_enabled:
 			# left-click RELEASE
@@ -98,32 +97,25 @@ func unit_combat_select_input(event):
 			if Input.is_action_just_pressed("left_click"):
 				# If we left click while selecting target, we don't need to worry about resetting selected
 				# This is handled below by 'if not(Input.is_action_pressed("shift")):release_all_selected_units()'
-				if is_targeting: reset_target_lines()
+				if is_targeting: 
+					reset_target_lines()
+
 				if not(Input.is_action_pressed("shift")) and selected_units_array.size() > 0:
 					release_all_selected_units()
 					update_gui_data()
 					unit_combat_selection_changed.emit()
 
 				# Handle select panel selection. This allows _process to start tracking the mouse
-				pc.is_selecting = true
-				pc.selection_start = get_global_mouse_position()
-				pc.select_panel_collision.disabled = false
-				pc.select_panel.position = pc.selection_start
-				pc.select_panel.size = Vector2()
-				pc.select_panel.visible = true # Incase this was previously hidden by double click
-				pc.select_panel_collision.position = pc.selection_start
-				pc.select_panel_collision.shape.size = Vector2()
+				pc.initialize_select_panel()
 
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
 		if Input.is_action_just_pressed("right_click"):
 			if is_targeting: # If targeting, we need to determine if a valid target was clicked
 				if current_target:
 					set_selected_target()
-					reset_target_lines()
 					pc.reset_select_panel()
 				else:
 					set_selected_unit_paths()
-					# reset_target_lines()
 			else: # If not targeting, we only want to set pathing
 				set_selected_unit_paths()
 
@@ -197,22 +189,11 @@ func release_specific_unit(selected_unit) -> void:
 
 ## This is the final step in targeting
 func set_selected_target() -> void:
-	is_targeting = false
 	for unit in selected_units_array:
-		unit.select_target(current_target)
-		current_target.add_attacker(unit)
-	# Reset target area
-	target_area.position = Vector2()
-	target_collision.disabled = true
+		if unit.is_moving: # If the unit moving, stop moving and then set target
+			unit.stop_moving()
 
-func reset_target_lines() -> void:
-	is_targeting = false
-	for unit in selected_units_array:
-		if unit.target_line:
-			unit.target_line.points = PackedVector2Array([])
-	# Reset target area
-	target_area.position = Vector2()
-	target_collision.disabled = true
+		unit.target = current_target
 
 func get_all_player_units() -> Array[PlayerUnit]:
 	for unit in units.get_children():
@@ -221,6 +202,7 @@ func get_all_player_units() -> Array[PlayerUnit]:
 	return all_player_units_array
 
 func tab_select_next_unit() -> void:
+	#TODO: This is broken
 	# Clear data from previous tab selection
 	reset_target_lines()
 	release_all_selected_units()
@@ -244,39 +226,47 @@ func tab_select_next_unit() -> void:
 	else:
 		current_unit_index = 0
 
+func set_selected_units_target_lines() -> void:
+	for unit in selected_units_array:
+		# if not unit.is_moving:
+		var new_vector_magnitude = (pc.current_mouse_position - unit.position).length()
+		if new_vector_magnitude < unit.max_range.length():
+			unit.target_line.points = PackedVector2Array([unit.position, pc.current_mouse_position])
+			target_area.position = pc.current_mouse_position
+		else:
+			var direction_vector = pc.current_mouse_position - unit.position
+			var scaling_factor = unit.max_range.length() / direction_vector.length()
+			var scaled_vector = direction_vector * scaling_factor
+			var bounded_vector = scaled_vector + unit.position
+			unit.target_line.points = PackedVector2Array([unit.position, bounded_vector])
+			target_area.position = bounded_vector
+		# elif unit.is_moving: # Stop the unit from moving and then set targets
+		# 	unit.target_line.points = PackedVector2Array()
+
+func reset_target_lines() -> void:
+	is_targeting = false
+	for unit in selected_units_array:
+		if unit.target_line:
+			unit.target_line.points = PackedVector2Array([])
+	# Reset target area
+	target_area.position = Vector2()
+	target_collision.disabled = true
+
 func initialize_target_line(unit) -> void:
 	var new_target_line: Line2D = Line2D.new()
 	new_target_line.texture = dash_line
 	new_target_line.texture_mode = Line2D.LINE_TEXTURE_TILE
 	new_target_line.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
 	new_target_line.points = PackedVector2Array([unit.position])
-	new_target_line.z_index = Constants.z_index_mapping["GUI"] # TODO Make its own
+	new_target_line.z_index = Constants.z_index_mapping["GUI"] # TODO Make it's own layer
 	unit.target_line = new_target_line
 	pc.add_child(new_target_line) # Make child of PlayerController for now, so we don't have to worry about transform of unit
-
-func set_selected_units_target_lines() -> void:
-	for unit in selected_units_array:
-		if not unit.is_moving:
-			var new_vector_magnitude = (pc.current_mouse_position - unit.position).length()
-			if new_vector_magnitude < unit.max_range.length():
-				unit.target_line.points = PackedVector2Array([unit.position, pc.current_mouse_position])
-				target_area.position = pc.current_mouse_position
-			else:
-				var direction_vector = pc.current_mouse_position - unit.position
-				var scaling_factor = unit.max_range.length() / direction_vector.length()
-				var scaled_vector = direction_vector * scaling_factor
-				var bounded_vector = scaled_vector + unit.position
-				unit.target_line.points = PackedVector2Array([unit.position, bounded_vector])
-				target_area.position = bounded_vector
-		elif unit.is_moving: # Don't draw targeting line if unit is moving
-			unit.target_line.points = PackedVector2Array()
 
 func set_selected_unit_paths():
 	var target_grid_point = Constants.world_to_grid(pc.current_mouse_position)
 	for unit in selected_units_array:
-		print("Processing Unit: ", unit.name)
 		unit.set_path_to(target_grid_point)
-	pass
+		unit.target = null
 
 ## Reset and update `selected_units_common_abilities_array` to only include `AbilityData` resources which are present
 ## in all units found in `selected_units_array`.

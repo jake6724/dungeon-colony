@@ -1,8 +1,7 @@
 class_name PlayerUnit
-extends Node2D
+extends Unit
 
 # TODO: Make path lines center
-# TODO: Calculate move speed
 
 # Node References
 @onready var main = get_tree().root.get_node("Main")
@@ -14,9 +13,6 @@ extends Node2D
 @onready var selected_sprite = $SelectedSprite
 @onready var area = get_node("UnitArea")
 @onready var collision = area.get_node("UnitCollision")
-
-#Signals 
-signal auto_attacking
 
 # General Unit Data
 var data: UnitData = UnitData.new()
@@ -31,33 +27,42 @@ var path_line: Line2D # TODO Make this line a resource ?
 var path_target_panel: Panel
 
 # Combat
-var attack_damage: float
+var health: float = 100
+var is_alive: bool = true
+var weapon_damage: float
+var magic_damage: float
 var attack_speed: float
 var move_speed: float
 var can_attack: bool = false
 var max_range: Vector2 = Vector2(1000, 1000)
-var weapon: WeaponData = Constants.player_unit_unarmed
-var weapon_off_hand: WeaponData
-var active_weapon_level: float
-var armor_head: ArmorData
-var armor_chest: ArmorData
-var armor_legs: ArmorData
+@export var weapon: WeaponData = Constants.player_unit_unarmed
+@export var weapon_off_hand: WeaponData
+@export var armor_head: ArmorData
+@export var armor_chest: ArmorData
+@export var armor_legs: ArmorData
 
+var target_line: Line2D
 var auto_attack_timer: Timer
 var auto_attack_line: Line2D
 var auto_attack_line_timer: Timer
 var target: EnemyUnit = null:
 	set(value):
-		if value != null:
-			target = value
-			auto_attack_timer.start(attack_speed) # This will reset timer if already active
-		elif value == null: 
-			auto_attack_timer.stop()
-			can_attack = false
-var target_line: Line2D
+		if value != target: # Don't run if new target is the same as current
+			if value: # Target was NOT set to EnemyUnit object
+				target = value
+				auto_attack_timer.start(attack_speed) # ? 
+
+			else: # Target was set to null
+				target = value
+				auto_attack_timer.stop()
+				can_attack = false
 
 # Abilities
 var abilities_array: Array[AbilityData] = []
+@export var ability_1 = AbilityData
+@export var ability_2 = AbilityData
+@export var ability_3 = AbilityData
+@export var ability_4 = AbilityData
 
 # # ABILITY TESTING - NOT PERMANENT SET UP
 # @export var test_ability_1: AbilityData
@@ -105,11 +110,13 @@ func _ready():
 	auto_attack_line.width = 10
 	main.call_deferred("add_child", auto_attack_line) # Child of main to avoid transform issues
 	auto_attack_line_timer = Timer.new()
+	auto_attack_line_timer.one_shot = true
+	auto_attack_line_timer.process_callback = Timer.TIMER_PROCESS_PHYSICS
 	auto_attack_line_timer.timeout.connect(on_auto_attack_line_timer_timeout)
 	add_child(auto_attack_line_timer)
 
 	# Initialize Combat data
-	set_attack_damage()
+	set_weapon_damage()
 	set_attack_speed()
 	set_move_speed()
 
@@ -119,12 +126,11 @@ func _process(delta):
 
 func move(delta):
 	if path.size() > 0:
-		is_moving = true
+		is_moving = true # Used to access moving info outside of this class
 		# Destination has been reached
 		if position.distance_to(path[0]) < 10:
 			grid_position = Constants.world_to_grid(path[0])
 			position = path[0]
-			# ow.grid[Constants.world_to_grid(path[0])].is_reserved = false
 			path.remove_at(0)
 			path_line.points = path
 
@@ -144,53 +150,54 @@ func move(delta):
 func set_path_to(destination_gp) -> void:
 	# Reset path target reservation; we can't assume that our grid position is the target and grid_position was even reserved.
 	# Instead of this we could just reserve/unreserve as unit moves along the path
+
 	if path:
 		ow.grid[Constants.world_to_grid(path[-1])].is_reserved = false
+		path = []
+		path_line.points = path
+	else:
+		ow.grid[grid_position].is_reserved = false
 
 	ow.grid[grid_position].is_reserved = false
-	reset_auto_attack() # If we try to change position, stop attacking. Even if movement doesn't occur.
+	target = null # Stop attacking every time unit moves
 	path = pf.get_astar_path(grid_position, destination_gp)
-	print(path)
 	if path:
 		ow.grid[Constants.world_to_grid(path[-1])].is_reserved = true
-		print("Path set!")
 		path_line.points = path
 		path_target_panel.position = path[-1]
 		path_target_panel.visible = true
 	else:
 		ow.grid[grid_position].is_reserved = true
-
-func select_target(new_target: EnemyUnit):
-	if new_target != target:
-		print("New target selected")
-		if target: 
-			reset_auto_attack()
-		target = new_target # Target runs actions when set. Check at top of this class
-		# Connect to targets death signal
-		target.enemy_died.connect(on_target_died)
-	else:
-		print("Old target selected")
 		
+## Reset path and unreserve path target. Find the closest grid point to current position and snap to grid. Reserve 
+## new grid position
+func stop_moving() -> void:
+	if path:
+		ow.grid[Constants.world_to_grid(path[-1])].is_reserved = false
+		path = []
+		path_line.points = path
+	
+	grid_position = Constants.world_to_grid(position)
+	position = Constants.grid_to_world(grid_position)
+	ow.grid[grid_position].is_reserved = true
+	 
 func auto_attack():
 	if can_attack and target:
-		auto_attacking.emit(self)
+		# TODO: Set up data for magic damage
+		var attack = Attack.new(self, target, weapon_damage, weapon.damage_type, magic_damage, Constants.MagicDamageType.NONE)
+		CombatManager.add_attack(attack)
 
-		# Start attack timer based on attack speed
+		# Reset auto attack data and timer
 		auto_attack_timer.start(attack_speed)
 		can_attack = false
 		
-		auto_attack_line.points = PackedVector2Array([position, target.position])
-		auto_attack_line.visible = true
-		auto_attack_line_timer.start(1)
+		if target: # Ensure target wasn't killed by auto_attack
+			auto_attack_line.points = PackedVector2Array([position, target.position])
+			auto_attack_line.visible = true
+			auto_attack_line_timer.start(.1)
 
 func on_auto_attack_timer_timeout(): 
 	can_attack = true
-
-## Reset internal target info, and make target remove this attackers data and signal connection
-func reset_auto_attack():
-	if target:
-		target.remove_attacker(self)
-	target = null
 
 func on_target_died():
 	target = null
@@ -199,7 +206,7 @@ func on_auto_attack_line_timer_timeout():
 	auto_attack_line.visible = false
 
 ## Calculate the attack damage for the PlayerUnit. This only sets the internal variable, no return
-func set_attack_damage() -> void:
+func set_weapon_damage() -> void:
 	var armor_damage_buff = 0.0
 	if armor_head:
 		armor_damage_buff += armor_head.damage_buff
@@ -208,7 +215,7 @@ func set_attack_damage() -> void:
 	if armor_legs:
 		armor_damage_buff += armor_legs.damage_buff
 
-	attack_damage = (weapon.damage + armor_damage_buff + (data.weapon_levels[weapon.type] * Constants.weapon_level_modifier))
+	weapon_damage = (weapon.damage + armor_damage_buff + (data.weapon_levels[weapon.type] * Constants.weapon_level_modifier))
 
 ## Calculate the attack speed for the PlayerUnit. This only sets the internal variable, no return
 func set_attack_speed() -> void:
@@ -223,8 +230,6 @@ func set_attack_speed() -> void:
 	attack_speed = (weapon.attack_speed / (1 + (data.weapon_levels[weapon.type] / 100)) * armor_attack_speed_modifier) # Could add buff modifier here ( ex; * 1.2)
 
 func set_move_speed() -> void:
-	#totalMoveSpeed = base_move_speed x (HaulingMSMultiplier)  x (ArmorMSReductionMultiplier) * EquippedWeaponMSReductionMultiplier * Buffs * Defbuffs
-	# TODO: Discuss armor penalties
 	var armor_move_speed_modifier: float = 1.0
 	if armor_head:
 		armor_move_speed_modifier += armor_head.move_speed_modifier
@@ -238,3 +243,7 @@ func set_move_speed() -> void:
 	
 	# This does not yet account for Buffs/Debuffs
 	move_speed = data.base_move_speed * armor_move_speed_modifier * weapon_move_speed_modifier
+
+func take_damage(weapon_damage, magic_damage):
+	health -= weapon_damage
+	health -= magic_damage

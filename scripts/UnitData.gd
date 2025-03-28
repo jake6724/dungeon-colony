@@ -60,7 +60,7 @@ var off_hand_weapon: Weapon = null # Only off-hand should be shield
 # Character Abilities
 var abilities: Array[CharacterAbility] = []
 
-# Level generation chances
+# Job level chance. Used to independently generate each job's level
 var base_job_level_chances: Array = [
 	[0, 5.0],   # 5
 	[10, 15.0], # 20
@@ -75,6 +75,7 @@ var base_job_level_chances: Array = [
 	[100, 0.05] # 100
 ]
 
+# Weapon level chance. Used to independently generate each weapon type's level
 var base_weapon_level_chances: Array = [
 	[0, 74.70], # 74.70
 	[10, 10.0], # 84.70
@@ -89,6 +90,7 @@ var base_weapon_level_chances: Array = [
 	[100, 0.05] # 100
 ]
 
+# Magic level chance. Used to independently generate each magic type's level
 var base_magic_level_chances: Array = [
 	[0, 5.0],   # 5
 	[10, 15.0], # 20
@@ -103,6 +105,9 @@ var base_magic_level_chances: Array = [
 	[100, 0.05] # 100
 ]
 
+# Overall chance unit will be magic. Cannot proceed with other magic skills if this is false
+var is_magic_enabled_chance: float = .20
+
 # A unit will select a type of magic to be enabled in; this is the likely-hood of a specific type to be enabled
 # this does NOT define the skill level with that type of magic
 var magic_type_chances: Array = [
@@ -111,10 +116,6 @@ var magic_type_chances: Array = [
 	[Constants.MagicType.STORM, 5], 
 	[Constants.MagicType.SUPPORT, 40]
 ]
-
-var is_magic_enabled_chance: float = .20
-# # This modifies `is_magic_enabled_chance`, making each subsequent attempt to add a magic type (fire,ice,etc.) more difficult
-# var is_magic_enabled_modifier: float = 20.0
 
 func generate_new_unit_data() -> void:
 	# Generate job levels
@@ -147,7 +148,6 @@ func generate_new_unit_data() -> void:
 		temp_is_magic_enabled = true if (Constants.rng.randf() < is_magic_enabled_chance) else false
 	
 	#print_unit_data()
-
 
 func get_new_job_level() -> float:
 	return clamp(Constants.get_weighted_random(base_job_level_chances) + (Constants.rng.randi_range(-5,5)), 0, 100) 

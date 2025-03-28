@@ -19,6 +19,7 @@ config/icon="uid://c01hawhqgerws"
 
 BetterTerrain="*res://addons/better-terrain/BetterTerrain.gd"
 Constants="*res://scripts/Constants.gd"
+CombatManager="*res://scripts/Combat/CombatManager.gd"
 
 [debug]
 
