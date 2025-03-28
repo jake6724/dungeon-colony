@@ -1,6 +1,9 @@
 class_name PlayerUnit
 extends Node2D
 
+# TODO: Make path lines center
+# TODO: Calculate move speed
+
 # Node References
 @onready var main = get_tree().root.get_node("Main")
 @onready var ow: Overworld = main.get_node("Overworld")
@@ -12,221 +15,226 @@ extends Node2D
 @onready var area = get_node("UnitArea")
 @onready var collision = area.get_node("UnitCollision")
 
-var grid_position: Vector2 = Vector2()
-var center: Vector2
+#Signals 
+signal auto_attacking
 
-# TODO tidy up all these
+# General Unit Data
 var data: UnitData = UnitData.new()
+var grid_position: Vector2 = Vector2()
 var is_selected: bool = false
 var preserve: bool = false
-var target_line: Line2D
-var max_range: Vector2 = Vector2(1000, 1000)
-
-var path: PackedVector2Array = []
-var path_line: Line2D # TODO Make this line a resource 
-var path_target_panel: Panel
 var is_moving: bool = false
 
-var target: EnemyUnit
+# Pathfinding
+var path: PackedVector2Array = []
+var path_line: Line2D # TODO Make this line a resource ?
+var path_target_panel: Panel
 
-var auto_attack_timer: Timer
-
-
-# ABILITY TESTING - NOT PERMANENT SET UP
-var abilities_array: Array[AbilityData] = []
-@export var test_ability_1: AbilityData
-@export var test_ability_2: AbilityData
-@export var test_ability_3: AbilityData
-@export var test_ability_4: AbilityData
-var ability_fireball = load("res://data/ability/character/fireball.tres")
-var ability_iceball = load("res://data/ability/character/ice_ball.tres") 
-var ability_stormball = load("res://data/ability/character/storm_ball.tres")
-var ability_heal = load("res://data/ability/character/heal.tres")
-
-# WEAPON TESTING - NOT PERMANENT SET UP
-var weapon: WeaponData = null # TODO: Needs a default of unarmed
-var active_weapon_level: float
-var test_long_sword: WeaponData = load("res://data/weapon/test_long_sword.tres")
-
-# ARMOR TESTING 
-var armor_head: ArmorData = null # TODO: These need a default of naked
-var armor_chest: ArmorData = null
-var armor_legs: ArmorData = null
-# TODO: All weapon, armor, ability resources should go under constants or a similar file
-var test_chestplate: ArmorData = load("res://data/armor/test_chestplate.tres")
-var test_no_helmet: ArmorData = load("res://data/armor/test_no_helmet.tres")
-var test_no_greaves: ArmorData = load("res://data/armor/test_no_greaves.tres")
-
+# Combat
 var attack_damage: float
 var attack_speed: float
+var move_speed: float
+var can_attack: bool = false
+var max_range: Vector2 = Vector2(1000, 1000)
+var weapon: WeaponData = Constants.player_unit_unarmed
+var weapon_off_hand: WeaponData
+var active_weapon_level: float
+var armor_head: ArmorData
+var armor_chest: ArmorData
+var armor_legs: ArmorData
 
-var can_attack: bool = true
+var auto_attack_timer: Timer
+var auto_attack_line: Line2D
+var auto_attack_line_timer: Timer
+var target: EnemyUnit = null:
+	set(value):
+		if value != null:
+			target = value
+			auto_attack_timer.start(attack_speed) # This will reset timer if already active
+		elif value == null: 
+			auto_attack_timer.stop()
+			can_attack = false
+var target_line: Line2D
+
+# Abilities
+var abilities_array: Array[AbilityData] = []
+
+# # ABILITY TESTING - NOT PERMANENT SET UP
+# @export var test_ability_1: AbilityData
+# @export var test_ability_2: AbilityData
+# @export var test_ability_3: AbilityData
+# @export var test_ability_4: AbilityData
+# var ability_fireball = load("res://data/ability/character/fireball.tres")
+# var ability_iceball = load("res://data/ability/character/ice_ball.tres") 
+# var ability_stormball = load("res://data/ability/character/storm_ball.tres")
+# var ability_heal = load("res://data/ability/character/heal.tres")
 
 func _ready():
-	grid_position = ow.worldToGrid(position)
-	# center = grid_position + Vector2(32,32)
+	# Configure basic data
+	grid_position = Constants.world_to_grid(position)
 	area.collision_layer = Constants.layer_mapping["unit"]
 	sprite.z_index = Constants.z_index_mapping["player_unit_sprite"]
 	selected_sprite.z_index = Constants.z_index_mapping["player_unit_select_sprite"]
+	
+	# Create unit data
 	data.generate_new_unit_data()
-	# data.print_unit_data()
 
-	# Path Visualization 
-	# TODO: Make lines center!
+	# Configure path line visualization
 	path_line = Line2D.new()
 	path_line.default_color = (Color(1.0, 1.0, 1.0, 0.500))
 	path_line.width = 10
 	path_line.z_index = Constants.z_index_mapping["GUI"]
 	main.call_deferred("add_child", path_line) # Main is too busy setting up its own children to add immediately
 
-	# Create Path Target Panel, set theme
+	# Configure path target visualization
 	path_target_panel = Panel.new()
 	path_target_panel.size = Vector2(Constants.cell_size, Constants.cell_size)
 	var style_box = load("res://scripts/Units/path_target_panel_style.tres")
 	path_target_panel.add_theme_stylebox_override("panel", style_box)
 	main.call_deferred("add_child", path_target_panel)
 
-	# # ABILITY TESTING - NOT PERMANENT SET UP
-	if test_ability_1:
-		abilities_array.append(test_ability_1)
-	if test_ability_2:
-		abilities_array.append(test_ability_2)
-	if test_ability_3:
-		abilities_array.append(test_ability_3)
-	if test_ability_4:
-		abilities_array.append(test_ability_4)
-
-	# WEAPON TESTING - NOT PERMANENT SET UP
-	if test_long_sword:
-		weapon = test_long_sword
-	active_weapon_level = get_active_weapon_level()
-
-	# ARMOR TESTING
-	if test_no_helmet:
-		armor_head = test_no_helmet
-	if test_chestplate:
-		armor_chest = test_chestplate
-	if test_no_greaves:
-		armor_legs = test_no_greaves
-	set_attack_damage()
-	set_attack_speed()
-
+	# Configure auto attack data
 	auto_attack_timer = Timer.new()
 	auto_attack_timer.process_callback = Timer.TIMER_PROCESS_PHYSICS # Make timer run on physics_process
 	auto_attack_timer.timeout.connect(on_auto_attack_timer_timeout)
-	add_child(auto_attack_timer) # Add as a child of PlayerUnit
+	add_child(auto_attack_timer)
+
+	# Configure auto attack visualization
+	auto_attack_line = Line2D.new()
+	auto_attack_line.default_color = Color.RED
+	auto_attack_line.width = 10
+	main.call_deferred("add_child", auto_attack_line) # Child of main to avoid transform issues
+	auto_attack_line_timer = Timer.new()
+	auto_attack_line_timer.timeout.connect(on_auto_attack_line_timer_timeout)
+	add_child(auto_attack_line_timer)
+
+	# Initialize Combat data
+	set_attack_damage()
+	set_attack_speed()
+	set_move_speed()
 
 func _process(delta):
 	move(delta)
 	auto_attack()
 
 func move(delta):
-	# Check if there are more points in the path to traverse
 	if path.size() > 0:
 		is_moving = true
+		# Destination has been reached
 		if position.distance_to(path[0]) < 10:
 			grid_position = Constants.world_to_grid(path[0])
 			position = path[0]
+			# ow.grid[Constants.world_to_grid(path[0])].is_reserved = false
 			path.remove_at(0)
 			path_line.points = path
 
-			if path.size() == 0:
-				path_target_panel.visible = false
-
+		# Still moving to destination
 		else:
-			grid_position = Constants.world_to_grid(position)
-			position += (path[0] - position).normalized() * data.base_move_speed * delta  
-	else:
+			# Don't allow grid_position to ever be an invalid spot
+			if not ow.grid[Constants.world_to_grid(path[0])].is_navigable:
+				grid_position = pf.find_valid_point(grid_position)
+			else:
+				grid_position = Constants.world_to_grid(path[0])
+			position += (path[0] - position).normalized() * move_speed * delta  
+	# All points on path have been traversed
+	else: 
+		path_target_panel.visible = false
 		is_moving = false
 
+func set_path_to(destination_gp) -> void:
+	# Reset path target reservation; we can't assume that our grid position is the target and grid_position was even reserved.
+	# Instead of this we could just reserve/unreserve as unit moves along the path
+	if path:
+		ow.grid[Constants.world_to_grid(path[-1])].is_reserved = false
 
-func set_path_to(target_grid_point) -> void:
-	if ow.grid.has(target_grid_point):
-		# Unreserve current grid
-		ow.grid[grid_position].is_reserved = false
-		# Reset path
-		path = []
-
-		if not ow.grid[target_grid_point].is_reserved:
-			ow.grid[target_grid_point].is_reserved = true
-			path = pf.getPath(grid_position, target_grid_point)
-		else:
-			# while path.size() < 0:
-				for direction in Constants.ORTHOGONAL_DIRECTIONS:
-					if ow.grid.has(target_grid_point + direction):
-						if not ow.grid[(target_grid_point + direction)].is_reserved and ow.grid[(target_grid_point + direction)].is_navigable:
-							target_grid_point = target_grid_point + direction
-							ow.grid[target_grid_point].is_reserved = true
-							path = pf.getPath(grid_position, target_grid_point)
-
-		if path:
-			path_line.points = path
-			path_target_panel.position = path[-1]
-			path_target_panel.visible = true
+	ow.grid[grid_position].is_reserved = false
+	reset_auto_attack() # If we try to change position, stop attacking. Even if movement doesn't occur.
+	path = pf.get_astar_path(grid_position, destination_gp)
+	print(path)
+	if path:
+		ow.grid[Constants.world_to_grid(path[-1])].is_reserved = true
+		print("Path set!")
+		path_line.points = path
+		path_target_panel.position = path[-1]
+		path_target_panel.visible = true
 	else:
-		print("Invalid grid point")
+		ow.grid[grid_position].is_reserved = true
 
-func find_valid_target_point_helper():
-	# var target_found = false
-
-	for direction in Constants.ORTHOGONAL_DIRECTIONS:
-		pass
-
-	pass
-
-func auto_attack():
-	if can_attack:
-		# Put the attack function, or call to enemy or whatever here
-		print(name, " attacked!")
+func select_target(new_target: EnemyUnit):
+	if new_target != target:
+		print("New target selected")
+		if target: 
+			reset_auto_attack()
+		target = new_target # Target runs actions when set. Check at top of this class
+		# Connect to targets death signal
+		target.enemy_died.connect(on_target_died)
+	else:
+		print("Old target selected")
 		
+func auto_attack():
+	if can_attack and target:
+		auto_attacking.emit(self)
+
 		# Start attack timer based on attack speed
 		auto_attack_timer.start(attack_speed)
 		can_attack = false
-	else:
-		pass
+		
+		auto_attack_line.points = PackedVector2Array([position, target.position])
+		auto_attack_line.visible = true
+		auto_attack_line_timer.start(1)
 
 func on_auto_attack_timer_timeout(): 
 	can_attack = true
 
+## Reset internal target info, and make target remove this attackers data and signal connection
+func reset_auto_attack():
+	if target:
+		target.remove_attacker(self)
+	target = null
+
+func on_target_died():
+	target = null
+
+func on_auto_attack_line_timer_timeout():
+	auto_attack_line.visible = false
+
 ## Calculate the attack damage for the PlayerUnit. This only sets the internal variable, no return
 func set_attack_damage() -> void:
-	# TODO: All units should have a default armor and weapon; naked and unarmed
-	# d = Weapon damage + Σ of Armor Damage + (weapon level * const weapon_level_modifier)
-	attack_damage = (weapon.damage + (armor_head.damage_buff + armor_chest.damage_buff + armor_legs.damage_buff) + 
-	(active_weapon_level * Constants.weapon_level_modifier))
+	var armor_damage_buff = 0.0
+	if armor_head:
+		armor_damage_buff += armor_head.damage_buff
+	if armor_chest:
+		armor_damage_buff += armor_chest.damage_buff
+	if armor_legs:
+		armor_damage_buff += armor_legs.damage_buff
+
+	attack_damage = (weapon.damage + armor_damage_buff + (data.weapon_levels[weapon.type] * Constants.weapon_level_modifier))
 
 ## Calculate the attack speed for the PlayerUnit. This only sets the internal variable, no return
 func set_attack_speed() -> void:
-	var total_armor_modifier = 1 + (armor_head.attack_speed_modifer + armor_chest.attack_speed_modifer + armor_legs.attack_speed_modifer)
-	attack_speed = weapon.attack_speed / (1 + (active_weapon_level / 100)) * total_armor_modifier
+	var armor_attack_speed_modifier = 1.0
+	if armor_head:
+		armor_attack_speed_modifier += armor_head.attack_speed_modifer
+	if armor_chest:
+		armor_attack_speed_modifier += armor_chest.attack_speed_modifer
+	if armor_legs:
+		armor_attack_speed_modifier += armor_legs.attack_speed_modifer
 
-	# print("Weapon level calculation: ", (1 + (active_weapon_level / 100)))
-	# print("Base weapon Attack Speed: ", weapon.attack_speed)
-	# print("Attack speed: ", attack_speed)
+	attack_speed = (weapon.attack_speed / (1 + (data.weapon_levels[weapon.type] / 100)) * armor_attack_speed_modifier) # Could add buff modifier here ( ex; * 1.2)
 
-func get_active_weapon_level():
-	match weapon.type:
-		Constants.WeaponType.SHORT_SWORD:
-			return data.short_sword_level
-		Constants.WeaponType.LONG_SWORD:
-			return data.long_sword_level
-		Constants.WeaponType.SHIELD:
-			return data.shield_level
-		Constants.WeaponType.BOW:
-			return data.bow_level
-		Constants.WeaponType.MACE:
-			return data.mace_level
-		Constants.WeaponType.HAMMER:
-			return data.hammer_level
-		Constants.WeaponType.SPEAR:
-			return data.spear_level
-		Constants.WeaponType.BATTLE_AXE:
-			return data.battle_axe_level
-		Constants.WeaponType.FLAME_STAFF:
-			return data.fire_magic_level
-		Constants.WeaponType.ICE_STAFF:
-			return data.ice_magic_level
-		Constants.WeaponType.STORM_STAFF:
-			return data.storm_magic_level
-		Constants.WeaponType.SUPPORT_STAFF:
-			return data.support_magic_level
+func set_move_speed() -> void:
+	#totalMoveSpeed = base_move_speed x (HaulingMSMultiplier)  x (ArmorMSReductionMultiplier) * EquippedWeaponMSReductionMultiplier * Buffs * Defbuffs
+	# TODO: Discuss armor penalties
+	var armor_move_speed_modifier: float = 1.0
+	if armor_head:
+		armor_move_speed_modifier += armor_head.move_speed_modifier
+	if armor_chest:
+		armor_move_speed_modifier += armor_chest.move_speed_modifier
+	if armor_legs:
+		armor_move_speed_modifier += armor_legs.move_speed_modifier
+
+	var weapon_move_speed_modifier: float = 1.0 + weapon.move_speed_modifier
+	if weapon_off_hand: weapon_move_speed_modifier += weapon_off_hand.move_speed_modifier
+	
+	# This does not yet account for Buffs/Debuffs
+	move_speed = data.base_move_speed * armor_move_speed_modifier * weapon_move_speed_modifier

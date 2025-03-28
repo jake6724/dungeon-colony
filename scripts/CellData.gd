@@ -1,11 +1,11 @@
 class_name CellData
 extends Object
 
-signal cellChanged(_pos: Vector2)
-signal navChanged(_pos: Vector2)
+signal cell_changed(_pos: Vector2)
+signal nav_changed(_pos: Vector2)
 
 var cell_area: CellArea
-
+## TODO: Change all these stupid generic 'pos' vars to say if grid or not
 ## Grid point
 var pos: Vector2
 ## World point
@@ -26,7 +26,8 @@ func _init(_pos: Vector2, _world_pos: Vector2, _size: int):
 var floor_data: FloorData = null:
 	set(value):
 		floor_data = value
-		emit_signal("cellChanged", pos)
+		cell_changed.emit(pos)
+		emit_signal("cell_changed", pos)
 	get:
 		return floor_data
 
@@ -34,7 +35,7 @@ var structure_data: StructureData = null:
 	set(value):
 		structure_data = value
 		occupier = value
-		emit_signal("cellChanged", pos)
+		emit_signal("cell_changed", pos)
 	get:
 		return structure_data
 
@@ -43,7 +44,7 @@ var mineral_data: Resource = null:
 		mineral_data = value
 		occupier = value
 		is_navigable = false
-		emit_signal("cellChanged", pos)
+		emit_signal("cell_changed", pos)
 	get:
 		return mineral_data
 
@@ -52,7 +53,7 @@ var plant_data: Plant = null:
 		plant_data = value
 		occupier = value
 		is_navigable = false
-		emit_signal("cellChanged", pos)
+		emit_signal("cell_changed", pos)
 	get:
 		return plant_data
 
@@ -67,7 +68,7 @@ var occupier = null:
 var is_navigable: bool = true :
 	set(value):
 		is_navigable = value
-		emit_signal("navChanged", pos)
+		emit_signal("nav_changed", pos)
 	get:
 		return is_navigable
 

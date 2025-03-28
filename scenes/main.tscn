@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://cietwbxcbfm0q"]
+[gd_scene load_steps=24 format=3 uid="uid://cietwbxcbfm0q"]
 
 [ext_resource type="Script" uid="uid://cvohvjt5mlu4n" path="res://scripts/Main.gd" id="1_t1omg"]
 [ext_resource type="TileSet" uid="uid://c2x727eekxfqf" path="res://data/main_tileset.tres" id="2_q6gee"]
@@ -14,9 +14,7 @@
 [ext_resource type="Texture2D" uid="uid://cfi5a76tp3t8y" path="res://art/minerals/mountain/hidden_gold_3x3_minimal.png" id="11_dp3eg"]
 [ext_resource type="PackedScene" uid="uid://bv2ipnhto24re" path="res://scenes/PlayerController/player_controller.tscn" id="15_jbj1t"]
 [ext_resource type="PackedScene" uid="uid://cjtlid7yr4new" path="res://scenes/player_unit.tscn" id="16_muem4"]
-[ext_resource type="Resource" uid="uid://dwvjcapqwfyom" path="res://data/ability/character/fireball.tres" id="17_dp3eg"]
 [ext_resource type="PackedScene" uid="uid://sxahn5ivxrf8" path="res://scenes/enemy_unit.tscn" id="17_muem4"]
-[ext_resource type="Resource" uid="uid://c5x84a7yhn1jd" path="res://data/ability/character/heal.tres" id="18_0ld40"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_trceg"]
 noise_type = 3
@@ -1971,7 +1969,6 @@ script = ExtResource("6_l54ba")
 [node name="Overworld" type="Node2D" parent="."]
 script = ExtResource("3_trceg")
 noise_texture = SubResource("NoiseTexture2D_a8y0u")
-show_debug = false
 
 [node name="TerrainLayer" type="TileMapLayer" parent="Overworld"]
 tile_set = ExtResource("2_q6gee")
@@ -1989,19 +1986,34 @@ script = ExtResource("4_g680v")
 
 [node name="PlayerUnit" parent="PlayerUnits" instance=ExtResource("16_muem4")]
 position = Vector2(1138, 261)
-test_ability_1 = ExtResource("17_dp3eg")
-test_ability_2 = ExtResource("18_0ld40")
 
 [node name="PlayerUnit2" parent="PlayerUnits" instance=ExtResource("16_muem4")]
-position = Vector2(865, 198)
-test_ability_1 = ExtResource("18_0ld40")
+z_index = 1
+position = Vector2(848, 263)
 
 [node name="PlayerUnit3" parent="PlayerUnits" instance=ExtResource("16_muem4")]
-position = Vector2(721, 329)
+position = Vector2(862, 461)
 
 [node name="PlayerUnit4" parent="PlayerUnits" instance=ExtResource("16_muem4")]
-position = Vector2(910, 437)
-test_ability_1 = ExtResource("18_0ld40")
+position = Vector2(864, 617)
+
+[node name="PlayerUnit5" parent="PlayerUnits" instance=ExtResource("16_muem4")]
+position = Vector2(1157, 613)
+
+[node name="PlayerUnit6" parent="PlayerUnits" instance=ExtResource("16_muem4")]
+position = Vector2(1341, 252)
+
+[node name="PlayerUnit7" parent="PlayerUnits" instance=ExtResource("16_muem4")]
+position = Vector2(1359, 455)
+
+[node name="PlayerUnit8" parent="PlayerUnits" instance=ExtResource("16_muem4")]
+position = Vector2(1376, 623)
+
+[node name="PlayerUnit9" parent="PlayerUnits" instance=ExtResource("16_muem4")]
+position = Vector2(1520, 244)
+
+[node name="PlayerUnit10" parent="PlayerUnits" instance=ExtResource("16_muem4")]
+position = Vector2(1136, 446)
 
 [node name="Line2D" type="Line2D" parent="."]
 default_color = Color(1, 1, 1, 0.803922)
@@ -2012,3 +2024,9 @@ default_color = Color(1, 1, 1, 0.803922)
 
 [node name="EnemyUnit" parent="EnemyUnits" instance=ExtResource("17_muem4")]
 position = Vector2(418, 326)
+
+[node name="EnemyUnit2" parent="EnemyUnits" instance=ExtResource("17_muem4")]
+position = Vector2(234, 210)
+
+[node name="EnemyUnit3" parent="EnemyUnits" instance=ExtResource("17_muem4")]
+position = Vector2(277, 430)

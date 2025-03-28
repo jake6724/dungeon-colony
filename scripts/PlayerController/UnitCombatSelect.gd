@@ -142,7 +142,6 @@ func on_unit_combat_select_panel_area_entered(entering_area):
 		update_gui_data()
 		unit_combat_selection_changed.emit()
 
-
 ## Called when an Area2D that was in select_panel leaves the select_panel borders. 
 ## Only used in the case of units exiting select panel before final size is set
 func on_unit_combat_select_panel_area_exited(exiting_area):
@@ -155,10 +154,8 @@ func on_unit_combat_select_panel_area_exited(exiting_area):
 				unit_combat_selection_changed.emit()
 
 func on_target_area_entered(entering_target):
-	print(entering_target)
 	if entering_target.owner is EnemyUnit:
 		var entering_enemy: EnemyUnit = entering_target.owner
-		print("Found!")
 		current_target = entering_enemy
 
 func on_target_area_exited(exiting_target):
@@ -198,13 +195,12 @@ func release_specific_unit(selected_unit) -> void:
 	var index = selected_units_array.find(selected_unit)
 	selected_units_array.remove_at(index)
 
-## This is the final step in targeting, and ends targeting mode. Selected units will set their target, 
-## and remove targeting lines, and clear `selected_units_array` to start fresh. 
+## This is the final step in targeting
 func set_selected_target() -> void:
 	is_targeting = false
-	print(current_target)
 	for unit in selected_units_array:
-		unit.target = current_target
+		unit.select_target(current_target)
+		current_target.add_attacker(unit)
 	# Reset target area
 	target_area.position = Vector2()
 	target_collision.disabled = true
@@ -253,7 +249,7 @@ func initialize_target_line(unit) -> void:
 	new_target_line.texture = dash_line
 	new_target_line.texture_mode = Line2D.LINE_TEXTURE_TILE
 	new_target_line.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
-	new_target_line.points = PackedVector2Array([unit.center])
+	new_target_line.points = PackedVector2Array([unit.position])
 	new_target_line.z_index = Constants.z_index_mapping["GUI"] # TODO Make its own
 	unit.target_line = new_target_line
 	pc.add_child(new_target_line) # Make child of PlayerController for now, so we don't have to worry about transform of unit
@@ -278,6 +274,7 @@ func set_selected_units_target_lines() -> void:
 func set_selected_unit_paths():
 	var target_grid_point = Constants.world_to_grid(pc.current_mouse_position)
 	for unit in selected_units_array:
+		print("Processing Unit: ", unit.name)
 		unit.set_path_to(target_grid_point)
 	pass
 

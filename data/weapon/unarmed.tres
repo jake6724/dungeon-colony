@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=2 format=3 uid="uid://dkl5i4n6rkfav"]
+
+[ext_resource type="Script" uid="uid://b8mhv2ad8y2up" path="res://scripts/Combat/WeaponData.gd" id="1_cucoe"]
+
+[resource]
+script = ExtResource("1_cucoe")
+name = "unarmed"
+display_name = "Unarmed"
+type = 1
+damage_type = 3
+damage = 10.0
+attack_speed = 2.0
+move_speed_modifier = 0.0
+metadata/_custom_type_script = "uid://b8mhv2ad8y2up"

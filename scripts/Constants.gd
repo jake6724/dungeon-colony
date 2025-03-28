@@ -67,13 +67,20 @@ func world_to_grid(pos: Vector2) -> Vector2:
 	return floor(pos / cell_size)
 
 # Combat Enums
-enum WeaponDamageType {NONE, SLASH, PIERCE, BLUNT}
 enum MagicDamageType {NONE, FIRE, ICE, STORM}
+enum MagicType {NONE, FIRE, ICE, STORM, SUPPORT}
 
-enum WeaponType {NONE, SHORT_SWORD, LONG_SWORD, SHIELD, BOW, MACE, HAMMER, SPEAR, BATTLE_AXE,
+enum WeaponDamageType {NONE, SLASH, PIERCE, BLUNT}
+enum WeaponType {NONE, UNARMED, SHORT_SWORD, LONG_SWORD, SHIELD, BOW, MACE, HAMMER, SPEAR, BATTLE_AXE,
 FLAME_STAFF, ICE_STAFF, STORM_STAFF, SUPPORT_STAFF}
-enum ArmorType {NONE, HELMET, CHESTPLATE, GREAVES}
+enum ArmorType {NONE, NO_ARMOR, HELMET, CHESTPLATE, GREAVES}
 
 # Combat constants
 const weapon_level_modifier: float = 1.0 # This modifies how much each weapon skill level adds to final unit damage calculation
 const min_attack_speed: float = 5
+
+const player_unit_unarmed = preload("res://data/weapon/unarmed.tres")
+
+# Job data
+enum JobType {NONE, CARPENTER, STONEWORKER, BLACKSMITH, CRAFTSMAN, MINER, FARMER, TAILOR,
+ALCHEMIST, DOCTOR, BUILDER, SURVIVALIST, LABORER}

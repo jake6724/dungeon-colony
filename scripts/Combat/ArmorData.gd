@@ -7,7 +7,8 @@ extends Resource
 @export var damage_buff: float = 0.0
 @export var magic_buff: float = 0.0
 @export var defense: float = 0.0
-@export var movement_speed_modifier: float = 0.0
+@export var move_speed_modifier: float = 0.0
+@export var is_broken: bool = false
 
 # [-1.0 to 1.0]; Value is a percentage of total character attack speed add or subtracted (.1 is +%10 attack speed)
 @export var attack_speed_modifer: float = 0.0 
