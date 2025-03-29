@@ -1,14 +1,10 @@
 class_name PathFinder
 extends Node
 
-# Make untis move through the center of the point not top right ? 
-
-var a_star = AStar2D.new()
 @onready var main = get_tree().root.get_node("Main")
 @onready var ow = main.get_node("Overworld")
-
-const DIRECTIONS: Array[Vector2] = [(Vector2.UP + Vector2.LEFT), Vector2.UP, (Vector2.UP + Vector2.RIGHT), 
-Vector2.LEFT, Vector2.RIGHT, (Vector2.DOWN + Vector2.LEFT), Vector2.DOWN, (Vector2.DOWN + Vector2.RIGHT)]
+var a_star = AStar2D.new()
+var grid_point_id_map: Dictionary[Vector2, int] = {} # Store the Astar ID mapping of each grid point
 
 func initialize():
 	add_all_points()
@@ -25,6 +21,7 @@ func get_astar_path(point_a: Vector2, point_b: Vector2) -> PackedVector2Array:
 			point_a = find_valid_point(point_a)
 
 		# ID's are Astar node internal id's
+		# TODO:
 		var a_id: int = get_grid_point_id(point_a)
 		var b_id: int = get_grid_point_id(point_b)
 		var a_star_path: PackedVector2Array = a_star.get_point_path(a_id, b_id, false)
@@ -38,8 +35,9 @@ func get_astar_path(point_a: Vector2, point_b: Vector2) -> PackedVector2Array:
 ## pathing
 func add_all_points():
 	var cur_id = 0
-	for point in ow.grid:
-		a_star.add_point(cur_id, ow.gridToWorld(point))
+	for grid_point in ow.grid:
+		a_star.add_point(cur_id, ow.gridToWorld(grid_point))
+		grid_point_id_map[grid_point] = cur_id # Save all point mappings for O(1) look-up in the future
 		cur_id += 1
 
 ## Iterate over all overworld grid points and run connect_point on them. Used to connect all points to eachother in overworld.
@@ -49,26 +47,27 @@ func connect_all_points():
 		ow.grid[point].nav_changed.connect(on_nav_changed) 
 
 func connect_point(grid_point: Vector2) -> void:
-	var grid_point_id = get_grid_point_id(grid_point)
+	var grid_point_id = grid_point_id_map.get(grid_point, -1)
+
 	# Don't connect a point to its neighbors if it isn't navigable itself
 	# This will save time by not processing mountain tiles
-	if not(ow.grid[grid_point].is_navigable):
+	if grid_point_id == -1 or not ow.grid[grid_point].is_navigable :
 		return 
 		
-	for direction in DIRECTIONS:
-		var neighbor = grid_point + direction
-		var neighbor_id = get_grid_point_id(neighbor)
+	for direction in Constants.DIRECTIONS:
+		var neighbor: Vector2 = grid_point + direction
+		var neighbor_id = grid_point_id_map.get(neighbor, -1)
 
-		if ow.grid.has(neighbor) and ow.grid[neighbor].is_navigable:
-			a_star.connect_points(grid_point_id, neighbor_id)
+		if neighbor_id != -1 and ow.grid[neighbor].is_navigable:
+				a_star.connect_points(grid_point_id, neighbor_id)
 
 ## Disconnect point from all of its neighbors. Requires grid_point
 func disconnect_point(grid_point: Vector2) -> void:
-	var _point_id = get_grid_point_id(grid_point)
-	for direction in DIRECTIONS:
+	var grid_point_id = grid_point_id_map[grid_point]
+	for direction in Constants.DIRECTIONS:
 		var neighbor = grid_point + direction
-		var neighbor_id = get_grid_point_id(neighbor)
-		a_star.disconnect_points(_point_id, neighbor_id)
+		var neighbor_id = grid_point_id_map[neighbor]
+		a_star.disconnect_points(grid_point_id, neighbor_id)
 
 func on_nav_changed(grid_point: Vector2) -> void:
 	if ow.grid[grid_point].is_navigable:

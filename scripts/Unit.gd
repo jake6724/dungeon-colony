@@ -1,6 +1,21 @@
 class_name Unit
 extends Node2D
 
+# TODO: Make more calculations on damage based on type
+## Returns `true` if `Unit` died, `false` if not
+# func take_damage(weapon_damage: float, _weapon_damage_type: Constants.WeaponDamageType, 
+# magic_damage: float, _magic_damage_type: Constants.MagicDamageType) -> bool:
+
+# 	health -= weapon_damage
+# 	health -= magic_damage
+# 	health_bar.value = health
+
+# 	if health <= 0:
+# 		return true
+# 	else:
+# 		return false
+
+
 # @onready var main = get_tree().root.get_node("Main")
 # @onready var ow: Overworld = main.get_node("Overworld")
 # @onready var pf: PathFinder = ow.get_node("PathFinding")

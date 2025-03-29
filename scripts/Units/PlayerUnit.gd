@@ -180,7 +180,7 @@ func stop_moving() -> void:
 	grid_position = Constants.world_to_grid(position)
 	position = Constants.grid_to_world(grid_position)
 	ow.grid[grid_position].is_reserved = true
-	 
+
 func auto_attack():
 	if can_attack and target:
 		# TODO: Set up data for magic damage

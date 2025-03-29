@@ -1969,6 +1969,7 @@ script = ExtResource("6_l54ba")
 [node name="Overworld" type="Node2D" parent="."]
 script = ExtResource("3_trceg")
 noise_texture = SubResource("NoiseTexture2D_a8y0u")
+show_debug = false
 
 [node name="TerrainLayer" type="TileMapLayer" parent="Overworld"]
 tile_set = ExtResource("2_q6gee")

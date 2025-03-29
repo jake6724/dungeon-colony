@@ -7,8 +7,8 @@ extends Node2D
 @onready var structure_layer: TileMapLayer = get_node("StructureLayer")
 
 @export var noise_texture: NoiseTexture2D
-@export var grid_width: int = 25
-@export var grid_height: int = 25
+@export var grid_width: int = 200
+@export var grid_height: int = 200
 @export var cell_size: int = 64
 @export var show_debug: bool = true
 
@@ -30,7 +30,7 @@ var mineral_resources: Dictionary[String, Resource] = {
 	"iron": preload("res://data/mineral/iron.tres"),
 	"copper": preload("res://data/mineral/copper.tres"),
 	"titanium": preload("res://data/mineral/titanium.tres"),
-	"gold": preload("res://data/mineral/gold.tres")}
+	"gold": preload("res://data/mineral/gold.tres"),}
 
 var mineral_spawn_chances: Array = [
 	[mineral_resources["stone"], 98.5],

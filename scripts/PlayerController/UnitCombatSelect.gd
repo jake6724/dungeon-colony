@@ -49,10 +49,8 @@ func configure_select_mode():
 func unit_combat_select_process():
 	# Unit target select and graphics
 	if is_targeting:
-		var new_current_mouse_position = get_global_mouse_position()
-		if new_current_mouse_position != pc.current_mouse_position: # Only do all the calculations if mouse position changed
-			pc.current_mouse_position = new_current_mouse_position
-			set_selected_units_target_lines()
+		pc.current_mouse_position = get_global_mouse_position()
+		set_selected_units_target_lines()
 
 	if pc.is_selecting:
 		pc.current_mouse_position = get_global_mouse_position()

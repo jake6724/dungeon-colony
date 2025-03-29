@@ -14,11 +14,9 @@ func _ready():
 
 # TODO: Make more calculations on damage based on type
 ## Returns `true` if `Unit` died, `false` if not
-func take_damage(weapon_damage: float, _weapon_damage_type: Constants.WeaponDamageType, 
-magic_damage: float, _magic_damage_type: Constants.MagicDamageType) -> bool:
-
-	health -= weapon_damage
-	health -= magic_damage
+func take_damage(attack: Attack) -> bool:
+	health -= attack.weapon_damage
+	health -= attack.magic_damage
 	health_bar.value = health
 
 	if health <= 0:
